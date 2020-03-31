@@ -1893,7 +1893,7 @@
                             "MAE 4300"
                         ]
                     ], 
-                    "fulfilledby": "courses", 
+                    "fulfilledBy": "courses", 
                     "minCount": 10
                 }, 
                 {
@@ -2049,6 +2049,103 @@
                     "source": "beadvised.bee.cornell.edu", 
                     "search": "all-eligible", 
                     "includes": [],
+                    "fulfilledBy": "courses", 
+                    "minCount": 4
+                }
+            ]
+        }, 
+        "ECE": {
+            "name": "Electrical"
+        }, 
+        "ChEME":{
+            "name": "Chemical Engineering", 
+            "schools": ["EN"], 
+            "requirements":[
+                {
+                    "name": "Required Major Courses", 
+                    "description": "Required Chemical Engineering classes", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": "code", 
+                    "includes": [
+                        ["CHEME 3010"], 
+                        ["CHEME 3130"], 
+                        ["CHEME 3230"], 
+                        ["CHEME 3240"], 
+                        ["CHEME 3320"],
+                        ["CHEME 3720"], 
+                        ["CHEME 3900"],
+                        ["CHEME 4320"], 
+                        [
+                            "CHEME 4620", 
+                            "CHEME 4630"
+                        ]
+                    ], 
+                    "fulfilledBy": "courses", 
+                    "minCount": 9
+                }, 
+                {
+                    "name": "Advanced CHEME Elective", 
+                    "description": "Electives can be taken in semester 7 and 8. Major-approved Electives must be approved by your CHEME faculty advisor. Students with a biomolecular focus may use the following courses as electives: CHEME 4010 and CHEME 4020 as advanced CHEME Electives; BIOMG 3300 and CHEME 5430 or CHEME 4810 as a Major-approved Elective. The Engineering Accreditation Commission of ABET requires at least 48 credits of engineering courses. The chemical engineering degree requirements provide 45 credits of engineering courses. Therefore, at least three credits of electives—Advisor-approved Electives, Major Approved Electives, or the Biology Elective—must be courses offered by the College of Engineering. If you take CEE 3040 or ENGRD 2700 in place of MATH 2940, this counts as an elective engineering course.",
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": "code", 
+                    "includes": [], 
+                    "fulfilledBy": "self-check", 
+                    "minCount": 2
+                }, 
+                {
+                    "name": "Major-approved Elective 1: Biology Elective", 
+                    "description": "The biology elective can be taken when schedule permits. Each student must complete one of the seven following options for the biology elective", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": "code", 
+                    "includes": [
+                        ["CHEME 2880"], 
+                        ["CHEME 5430"], 
+                        [
+                            "BIOG 1500", 
+                            "BIOMG 1350", 
+                            "BIOG 1440", 
+                            "BIOG 1445", 
+                            "BIOG 1107", 
+                            "BIOG 1108", 
+                            "BIOG 1500"
+                        ], 
+                        ["BIOMI 2900"], 
+                        [
+                            "BIOMG 3300", 
+                            "BIOMG 3330", 
+                            "BIOMG 3350"
+                        ], 
+                        [
+                            "BIOMG 3310", 
+                            "BIOMG 3320"
+                        ]
+                    ], 
+                    "fulfilledBy": "self-check", 
+                    "minCount": 1
+                }, 
+                {
+                    "name": "Other Major-approved Electives", 
+                    "description": "Electives can be taken in semester 7 and 8. Major-approved Electives must be approved by your CHEME faculty advisor. Students with a biomolecular focus may use the following courses as electives: CHEME 4010 and CHEME 4020 as advanced CHEME Electives; BIOMG 3300 and CHEME 5430 or CHEME 4810 as a Major-approved Elective. The Engineering Accreditation Commission of ABET requires at least 48 credits of engineering courses. The chemical engineering degree requirements provide 45 credits of engineering courses. Therefore, at least three credits of electives—Advisor-approved Electives, Major Approved Electives, or the Biology Elective—must be courses offered by the College of Engineering. If you take CEE 3040 or ENGRD 2700 in place of MATH 2940, this counts as an elective engineering course.", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": "code", 
+                    "includes": [], 
+                    "fulfilled": "self-check", 
+                    "minCount": 3
+                }, 
+                {
+                    "name": "Courses outside the Major",
+                    "description": "", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "includes": [
+                        ["CHEM 2510"], 
+                        ["CHEM 2900"], 
+                        [
+                            "CHEM 3570", 
+                            "CHEM 3530", 
+                            "CHEM 3590"
+                        ], 
+                        ["CHEM 3900"]
+                    ], 
                     "fulfilledBy": "courses", 
                     "minCount": 4
                 }
