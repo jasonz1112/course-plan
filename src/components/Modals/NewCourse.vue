@@ -2,7 +2,7 @@
   <div class="newCourse">
     <div class="newCourse-text">{{ text }}</div>
     <div class="autocomplete">
-      <input class="newCourse-dropdown" :id="'dropdown-' + semesterID" :placeholder="placeholder" />
+      <input class="newCourse-dropdown" :id="'dropdown-' + semesterID" :ref="'dropdown-' + semesterID" :placeholder="placeholder" @keyup.enter="addCourse" @keyup.esc="closeCourseModal" />
     </div>
   </div>
 </template>
@@ -49,7 +49,8 @@ export default {
         if (!val) return;
         currentFocus = -1;
         /* create a DIV element that will contain the items (values): */
-        if (val.length >= 3) {
+        // search after value length of 2 to reduce search times of courses
+        if (val.length >= 2) {
           a = document.createElement('DIV');
           a.setAttribute('id', `${inp.id}autocomplete-list`);
           a.setAttribute('class', 'autocomplete-items');
@@ -59,21 +60,30 @@ export default {
           /* code array for results that contain course code and title array for results that contain title */
           const code = [];
           const title = [];
+
           for (const attr in courses) {
-            if (attr.toUpperCase().includes(val)) {
-              code.push(courses[attr].t);
-            } else if (
-              courses[attr].t
-              && courses[attr].t.toUpperCase().includes(val)
-            ) {
-              title.push(courses[attr].t);
+            if (courses[attr]) {
+              const result = { title: `${attr}: ${courses[attr].t}`, roster: courses[attr].r };
+              if (attr.toUpperCase().includes(val) && attr !== 'lastScanned') {
+                code.push(result);
+              } else if (
+                courses[attr].t
+                && courses[attr].t.toUpperCase().includes(val)
+              ) {
+                title.push(result);
+              }
             }
           }
-          code.sort();
-          title.sort();
+
+          // Sort both results by title
+          code.sort((first, second) => first.title - second.title);
+          title.sort((first, second) => first.title - second.title);
 
           /* prioritize code matches over title matches */
-          const match = code.concat(title);
+          let match = code.concat(title);
+
+          // limit the number of results to 10
+          match = match.slice(0, 10);
 
           match.forEach(newTitle => {
             /* check if the item starts with the same letters as the text field value: */
@@ -81,16 +91,18 @@ export default {
             /* reinitialize b for every input div */
             const div = document.createElement('DIV');
             /* make the matching letters bold: */
-            div.innerHTML = newTitle;
+            div.innerHTML = newTitle.title;
             /* insert a input field that will hold the current array item's value: */
-            div.innerHTML += `<input type='hidden' value="${newTitle}"'>`;
+            div.innerHTML += `<input type='hidden' value="${newTitle.title}" name="${newTitle.roster}">`;
             /* execute a function when someone clicks on the item value (DIV element): */
             div.addEventListener('click', () => {
               /* insert the value for the autocomplete text field: */
-              inpCopy.value = div.getElementsByTagName('input')[0].value;
+              inpCopy.value = newTitle.title;
+              inpCopy.name = newTitle.roster;
               /* close the list of autocompleted values,
                   (or any other open lists of autocompleted values: */
               closeAllLists();
+              this.addCourse();
             });
             a.appendChild(div);
           });
@@ -152,6 +164,10 @@ export default {
       document.addEventListener('click', e => {
         closeAllLists(e.target);
       });
+    },
+
+    addCourse() {
+      if (this.$refs[`dropdown-${this.semesterID}`].value) this.$parent.addItem();
     }
   }
 };

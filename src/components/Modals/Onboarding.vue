@@ -1,7 +1,7 @@
 <template>
   <div class="onboarding">
     <div class="onboarding-main">
-      <div v-if="isEditingProfile" class="onboarding-cancel" @click="cancelOnboarding()">
+      <div v-if="isEditingProfile" class="onboarding-cancel" @click="$emit('cancelOnboarding')">
         <img class="onboarding-cancel-icon" src="@/assets/images/x.svg" alt="X">
       </div>
       <div class="onboarding-content" :class="{ editing: isEditingProfile }">
@@ -37,6 +37,7 @@
               <div class="onboarding-selectWrapper">
                 <div
                   class="onboarding-select onboarding-input"
+                  :class="{ 'onboarding-select--disabled': Object.keys(colleges).length <= 0 }"
                   id="college"
                   v-for="(options, index) in displayOptions.college"
                   :key = index
@@ -76,10 +77,11 @@
               </div>
             </div>
             <div class="onboarding-inputWrapper onboarding-inputWrapper--college">
-              <label class="onboarding-label">Your Major (required)</label>
+              <label class="onboarding-label">Your Major</label>
               <div class="onboarding-selectWrapper">
                 <div
                   class="onboarding-select onboarding-input"
+                  :class="{ 'onboarding-select--disabled': Object.keys(majors).length <= 0 }"
                   id="major"
                   v-for="(options, index) in displayOptions.major"
                   :key = index
@@ -117,7 +119,7 @@
                   </div>
                 </div>
               </div>
-              <div class="onboarding-addRemoveWrapper">
+              <div class="onboarding-addRemoveWrapper" :class="{ 'onboarding--hidden': Object.keys(majors).length <= 0}">
                 <div class="onboarding-add" @click="addMajor">
                   Add
                 </div>
@@ -131,6 +133,7 @@
               <div class="onboarding-selectWrapper">
                 <div
                   class="onboarding-select onboarding-input"
+                  :class="{ 'onboarding-select--disabled': Object.keys(minors).length <= 0 }"
                   id="minor"
                   v-for="(options, index) in displayOptions.minor"
                   :key = index
@@ -168,7 +171,7 @@
                   </div>
                 </div>
               </div>
-              <div class="onboarding-addRemoveWrapper">
+              <div class="onboarding-addRemoveWrapper" :class="{ 'onboarding--hidden': Object.keys(minors).length <= 0}">
                 <div class="onboarding-add" @click="addMinor">
                   Add
                 </div>
@@ -192,6 +195,7 @@
 import reqsData from '@/requirements/reqs.json';
 
 const placeholderText = 'Select one';
+
 const clickOutside = {
   bind(el, binding, vnode) {
     el.event = function (event) {
@@ -225,7 +229,7 @@ export default {
     let majorText = placeholderText;
     let majorAcronym = '';
     let majorPlaceholderColor = '';
-    if (this.user.major !== '') {
+    if ('major' in this.user && this.user.major.length > 0) {
       majorText = this.user.majorFN;
       majorAcronym = this.user.major;
       majorPlaceholderColor = '#757575';
@@ -284,6 +288,7 @@ export default {
   mounted() {
     this.setCollegesMap();
     this.setMajorsList();
+    this.setMinorsList();
   },
   methods: {
     // Set the colleges map to with acronym keys and full name values
@@ -303,20 +308,51 @@ export default {
       const majors = {};
       const majorJSON = reqsData.major;
       for (const key in majorJSON) {
+        // make sure name defined
         if ('name' in majorJSON[key]) {
-          majors[key] = majorJSON[key].name;
+          // only show majors for schools the user is in
+          for (let i = 0; i < this.displayOptions.college.length; i += 1) {
+            const college = this.displayOptions.college[i];
+            if (majorJSON[key].schools.includes(college.acronym)) {
+              majors[key] = majorJSON[key].name;
+              continue;
+            }
+          }
         }
       }
-
       this.majors = majors;
     },
     // TODO: add minors when the list exists
     setMinorsList() {
       this.minors = {};
     },
+    // Clear a major if a new college is selected and the major is not in it
+    clearMajorIfNotInCollege() {
+      // Do nothing if no major set
+      if (this.displayOptions.major.length === 1 && this.displayOptions.major[0].acronym === '') {
+        return;
+      }
+      const majorJSON = reqsData.major;
+      for (let x = 0; x < this.displayOptions.major.length; x += 1) {
+        const major = this.displayOptions.major[x];
+        let foundCollege = false;
+        for (let i = 0; i < this.displayOptions.college.length; i += 1) {
+          const college = this.displayOptions.college[i];
+          if (majorJSON[major.acronym].schools.includes(college.acronym)) {
+            foundCollege = true;
+            break;
+          }
+        }
+        if (!foundCollege) {
+          major.placeholderColor = '';
+          major.placeholder = placeholderText;
+          major.acronym = '';
+        }
+      }
+    },
     submitOnboarding() {
       // Display error if a required field is empty, otherwise submit
-      if (this.firstName === '' || this.lastName === '' || this.noOptionSelected(this.displayOptions.college) || this.noOptionSelected(this.displayOptions.major)) {
+      if (this.firstName === '' || this.lastName === '' || this.noOptionSelected(this.displayOptions.college)) {
         this.isError = true;
       } else {
         const onboardingData = {
@@ -417,6 +453,8 @@ export default {
     },
     selectCollege(text, acronym, i) {
       this.selectOption('college', text, acronym, i);
+      this.setMajorsList();
+      this.clearMajorIfNotInCollege();
     },
     selectMajor(text, acronym, i) {
       this.selectOption('major', text, acronym, i);
@@ -452,9 +490,6 @@ export default {
     },
     removeMinor() {
       this.displayOptions.minor.pop();
-    },
-    cancelOnboarding() {
-      this.$parent.cancelOnboarding();
     }
   }
 };
@@ -525,7 +560,6 @@ export default {
   }
 
   &-subHeader {
-    font-weight: 600;
     font-size: 24px;
     line-height: 29px;
 
@@ -611,9 +645,8 @@ export default {
     border: 0;
     box-sizing: border-box;
     border-radius: 5px;
-    font-weight: bold;
     font-size: 14px;
-    line-height: 17px;
+    line-height: 14px;
     color: #FFFFFF;
 
     width: 20rem;
@@ -648,6 +681,11 @@ export default {
 
     &:not(:first-child) {
       margin-top: .5rem;
+    }
+
+    &--disabled {
+      opacity: 0.3;
+      pointer-events: none;
     }
   }
 
