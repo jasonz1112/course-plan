@@ -2336,87 +2336,88 @@
             ]
         }, 
         "CE": {
-            "name": "Operations Research and Engineering",
+            "name": "Civil Engineering",
             "schools": [
                 "EN"
             ],
             "requirements": [
                 {
                     "name": "Major Required Classes",
-                    "description": "The following courses may be substituted for ORIE 3150, if not used to meet other require- ments: MATH 3110 (Introduction to Analysis), MATH 4130 (Honors Real Analysis), MATH 4310 (Linear Algebra), MATH 4330 (Honors Linear Algebra), any 600 level ORIE course.",
+                    "description": "Major Required Classes",
                     "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
                     "search": ["code"],
                     "includes": [
                         [
-                            "ORIE 3120"
+                            "MAE 2030", 
+                            "CEE 4780"
                         ],
                         [
-                            "ORIE 3150"
+                            "ENGRD 3200"
                         ],
                         [
-                            "ORIE 3300"
+                            "ENGRD 2510", 
+                            "BEE 2510"
                         ],
                         [
-                            "ORIE 3310"
+                            "CEE 3040"
                         ],
                         [
-                            "ORIE 3500"
+                            "CEE 3230"
                         ],
                         [
-                            "ORIE 3510"
+                            "CEE 3310"
                         ],
                         [
-                            "ORIE 4580"
+                            "CEE 3410"
+                        ], 
+                        [
+                            "CEE 3610"
+                        ], 
+                        [
+                            "CEE 3710"
                         ]
                     ],
                     "fulfilledBy": "courses",
-                    "minCount": 7
+                    "minCount": 17
                 },
                 {
-                    "name": "ORIE Electives",
-                    "description": "At least 9 credits of ORIE electives at the 4000 level or above",
-                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
-                    "search": ["code"],
-                    "includes": [
-                        [
-                            "ORIE 4***",
-                            "ORIE 5***",
-                            "ORIE 6***"
-                        ]
-                    ],
-                    "fulfilledBy": "credits",
-                    "minCount": 9
-                },
-                {
-                    "name": "Engineering Distribution Courses",
-                    "description": "ENGRI 1xxx, ENGRD 2700, and ENGRD xxxx. ENGRD 2110 is recommended",
-                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
-                    "search": ["code"],
-                    "includes": [
-                        [
-                            "ENGRD 2700"
-                        ],
-                        [
-                            "ENGRD 2***",
-                            "ENGRD 3***"
-                        ],
-                        [
-                            "ENGRI 1***"
-                        ]
-                    ],
-                    "fulfilledBy": "courses",
-                    "minCount": 3
-                },
-                {
-                    "name": "Major Approved Electives (Non–ORIE)",
-                    "description": "Minimum of 9-12 credits of Major-Approved Electives 3 of which must be outside of ORIE. Technical courses in Engineering at the 2000 level or above.",
+                    "name": "Engineering Communications Course",
+                    "description": "",
                     "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
                     "includes": [],
                     "fulfilledBy": "self-check"
                 },
                 {
-                    "name": "Major Approved Elective",
-                    "description": "Minimum of 9-12 credits of Major-Approved Electives 3 of which must be outside of ORIE. Technical courses in Engineering at the 2000 level or above.",
+                    "name": "CEE Capstone Design Elective 1",
+                    "description": "To be chosen from lists available in the CE Undergraduate Office, 221 Hollister Hall. Lists of suggested courses are available for students interested in structural engineering, transportation engineering, fluid mechanics/hydrology, geotechnical engineering, water resources and environmental systems engineering, and environmental engineering.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "CEE Design Elective 2",
+                    "description": "To be chosen from lists available in the CE Undergraduate Office, 221 Hollister Hall. Lists of suggested courses are available for students interested in structural engineering, transportation engineering, fluid mechanics/hydrology, geotechnical engineering, water resources and environmental systems engineering, and environmental engineering.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "CEE Design Elective 3",
+                    "description": "To be chosen from lists available in the CE Undergraduate Office, 221 Hollister Hall. Lists of suggested courses are available for students interested in structural engineering, transportation engineering, fluid mechanics/hydrology, geotechnical engineering, water resources and environmental systems engineering, and environmental engineering.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Elective 1",
+                    "description": "To be chosen from lists available in the CE Undergraduate Office, 221 Hollister Hall. Lists of suggested courses are available for students interested in structural engineering, transportation engineering, fluid mechanics/hydrology, geotechnical engineering, water resources and environmental systems engineering, and environmental engineering.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Elective 2",
+                    "description": "To be chosen from lists available in the CE Undergraduate Office, 221 Hollister Hall. Lists of suggested courses are available for students interested in structural engineering, transportation engineering, fluid mechanics/hydrology, geotechnical engineering, water resources and environmental systems engineering, and environmental engineering.",
                     "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
                     "includes": [],
                     "fulfilledBy": "self-check"
