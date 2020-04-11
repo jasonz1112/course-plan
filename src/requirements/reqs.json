@@ -2423,6 +2423,135 @@
                     "fulfilledBy": "self-check"
                 }
             ]
+        }, 
+        "EAS": {
+            "name": "Earth and Atmospheric Sciences",
+            "schools": [
+                "EN"
+            ],
+            "requirements": [
+                {
+                    "name": "Major Required Classes",
+                    "description": "Major Required Classes",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "ENGRD 2250", 
+                            "EAS 2250"
+                        ],
+                        [
+                            "BIOG 1140", 
+                            "BIOG 1440", 
+                            "BIOEE 1610", 
+                            "BIOEE 1780", 
+                            "BIOMG 1350", 
+                            "BIOSM 1610", 
+                            "BIOSM 1780"
+                        ]
+                    ],
+                    "fulfilledBy": "courses",
+                    "minCount": 2
+                },
+                {
+                    "name": "Advisor-approved Course",
+                    "description": "An Advisor-approved course in statistics, computer science, mathematics, or natural science (including, but not limited to, a course in astronomy, a second course in biology, or an additional course in physics or chemistry).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "EAS Core",
+                    "description": "Core classes",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "EAS 3010", 
+                            "EAS 3030", 
+                            "EAS 3040", 
+                            "EAS 3050"
+                        ]
+                    ],
+                    "fulfilledBy": "courses",
+                    "minCount": 3
+                }, 
+                {
+                    "name": "Field Course",
+                    "description": "Field course options marked by an asterisk (*) require pre-approval by the faculty advisor and the EAS Curriculum Committee. These courses/internships/REUs should require observations to be taken in the field and interpreted by the student. Field courses should generally require 40+ hours of active observation and data collection in the field. Students using a non-credit research option for the field course requirement are required to complete an additional 3+ credits of EAS Concentration courses.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "EAS Concentration",
+                    "description": "The concentration courses build depth and provide the student with a specific expertise in some facet of earth system science. Four concentrations are defined for the Major: atmospheric sciences, environmental geoscience, geological sciences, and ocean sciences. In consultation with the student’s advisor and upon approval of the EAS curriculum committee, other concentrations may be tailored to a student’s interest. The concentration is achieved by completing four intermediate- to advanced-level courses (3000 level or above) that build on the core courses and have prerequisites in the required basic sciences and mathematics courses. These courses must be approved by the student’s advisor and the director of undergraduate studies.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "EAS Concentration",
+                    "description": "The concentration courses build depth and provide the student with a specific expertise in some facet of earth system science. Four concentrations are defined for the Major: atmospheric sciences, environmental geoscience, geological sciences, and ocean sciences. In consultation with the student’s advisor and upon approval of the EAS curriculum committee, other concentrations may be tailored to a student’s interest. The concentration is achieved by completing four intermediate- to advanced-level courses (3000 level or above) that build on the core courses and have prerequisites in the required basic sciences and mathematics courses. These courses must be approved by the student’s advisor and the director of undergraduate studies.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "EAS Concentration",
+                    "description": "The concentration courses build depth and provide the student with a specific expertise in some facet of earth system science. Four concentrations are defined for the Major: atmospheric sciences, environmental geoscience, geological sciences, and ocean sciences. In consultation with the student’s advisor and upon approval of the EAS curriculum committee, other concentrations may be tailored to a student’s interest. The concentration is achieved by completing four intermediate- to advanced-level courses (3000 level or above) that build on the core courses and have prerequisites in the required basic sciences and mathematics courses. These courses must be approved by the student’s advisor and the director of undergraduate studies.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "EAS Concentration",
+                    "description": "The concentration courses build depth and provide the student with a specific expertise in some facet of earth system science. Four concentrations are defined for the Major: atmospheric sciences, environmental geoscience, geological sciences, and ocean sciences. In consultation with the student’s advisor and upon approval of the EAS curriculum committee, other concentrations may be tailored to a student’s interest. The concentration is achieved by completing four intermediate- to advanced-level courses (3000 level or above) that build on the core courses and have prerequisites in the required basic sciences and mathematics courses. These courses must be approved by the student’s advisor and the director of undergraduate studies.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-Approved Elective",
+                    "description": "Core classes",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "EAS 3***"
+                        ]
+                    ],
+                    "fulfilledBy": "credits",
+                    "minCount": 3
+                }, 
+                {
+                    "name": "Outside Major Elective",
+                    "description": "The Major program includes nine (9) credits of courses outside the Major.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                    ],
+                    "fulfilledBy": "self-check"
+                }, 
+                {
+                    "name": "Outside Major Elective",
+                    "description": "The Major program includes nine (9) credits of courses outside the Major.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                    ],
+                    "fulfilledBy": "self-check"
+                }, 
+                {
+                    "name": "Outside Major Elective",
+                    "description": "The Major program includes nine (9) credits of courses outside the Major.",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                    ],
+                    "fulfilledBy": "self-check"
+                }
+            ]
         }
     }
 }
