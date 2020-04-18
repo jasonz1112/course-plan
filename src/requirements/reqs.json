@@ -2045,8 +2045,87 @@
             ]
         }, 
         "ECE": {
-            "name": "Electrical"
-        }, 
+            "name": "Electrical Engineering", 
+            "schools": ["EN"], 
+            "requirements": [
+                {
+                    "name": "Required Major Courses", 
+                    "description": "Required Major Courses", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": ["code"], 
+                    "includes": [
+                        [
+                            "ECE 2100"
+                        ],
+                        [
+                            "ECE 2200"
+                        ], 
+                        [
+                            "ECE 3400"
+                        ]
+                    ], 
+                    "fulfilledBy": "courses", 
+                    "minCount": 3
+                }, 
+                {
+                    "name":"ECE Foundation Course", 
+                    "description": "ECE Foundation Courses—At least three of the following: ECE 3030, ECE 3100, ECE 3140, ECE 3150, ECE 3250, and must include at least one of ECE 3100 and ECE 3250, and at least one of ECE 3030 and ECE 3150.", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "ECE 3100",
+                            "ECE 3250"
+                        ],
+                        [
+                            "ECE 3030",
+                            "ECE 3150"
+                        ],
+                        [
+                            "ECE 3140",
+                            "ECE 3030",
+                            "ECE 3150",
+                            "ECE 3100",
+                            "ECE 3250"
+                        ]
+                    ],
+                    "fulfilledBy":"courses", 
+                    "minCount": 3
+                }, 
+                {
+                    "name":"ECE CDE Course", 
+                    "description": "Culminating Design Experience (CDE): Consult the ECE Undergraduate Office for current CDE course offerings.", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": ["code"],
+                    "includes": [],
+                    "fulfilledBy":"self-check"
+                }, 
+                {
+                    "name":"ECE Elective", 
+                    "description": "Must be an upper-level mathematics course, which includes statistics, taken after Math 2940. A list of approved math electives is available online at www.mae.cornell.edu", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "ECE 3***"
+                        ], 
+                        [
+                            "ECE 4***"
+                        ]
+                    ],
+                    "fulfilledBy":"credits", 
+                    "minCount": 14
+                }, 
+                {
+                    "name":"Outside-ECE Technical Elective", 
+                    "description": "The Major program includes nine (9) credits of courses outside the Major. These are satisfied by the Outside-ECE Technical Electives.", 
+                    "source": "http://cornellengineeringhandbook.freeflowdp.com/cornellengineeringhandbook/5215877281438417/MobilePagedReplica.action?pm=2&folio=12#pg14", 
+                    "search": ["code"],
+                    "includes": [],
+                    "fulfilledBy":"self-check"
+                }
+            ]
+        },
         "CHEME":{
             "name": "Chemical Engineering", 
             "schools": ["EN"], 
