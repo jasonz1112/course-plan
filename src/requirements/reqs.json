@@ -2631,6 +2631,95 @@
                     "fulfilledBy": "self-check"
                 }
             ]
+        }, 
+        "EP": {
+            "name": "Engineering Physics",
+            "schools": [
+                "EN"
+            ],
+            "requirements": [
+                {
+                    "name": "Major Required Classes",
+                    "description": "Major required classes",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "search": ["code"],
+                    "includes": [
+                        [
+                            "AEP 3200"
+                        ],
+                        [
+                            "AEP 4200"
+                        ],
+                        [
+                            "AEP 3300"
+                        ],
+                        [
+                            "AEP 3550"
+                        ],
+                        [
+                            "AEP 3560",
+                            "AEP 3620",
+                            "AEP 4340"
+                        ],
+                        [
+                            "AEP 3610"
+                        ],
+                        [
+                            "AEP 3630"
+                        ],
+                        [
+                            "AEP 4230"
+                        ],
+                        [
+                            "PHYS 4410"
+                        ]
+                    ],
+                    "fulfilledBy": "courses",
+                    "minCount": 10
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                },
+                {
+                    "name": "Major-approved Electives",
+                    "description": "(1) All Major-approved Electives must be technical electives. (2) Five of the six courses must be at or above the 3000-level. (3) Nine credits of Major-approved Electives must be outside of AEP. (4) Only three independent study/research courses may be taken as Major-approved Electives and must be taken during the last four semesters. (5) If a third AEP course from note 'd' above is taken, it may be counted as a required Major approved Elective. (6) All Major-approved Electives must be taken for a letter grade (C- or better).",
+                    "source": "https://www.orie.cornell.edu/orie/programs/undergraduate-programs/degree-requirements",
+                    "includes": [],
+                    "fulfilledBy": "self-check"
+                }
+            ]
         }
     }
 }
