@@ -12,6 +12,7 @@ import bioRequirements from './majors/bio';
 import bioEngineeringRequirements from './majors/be';
 import commRequirements from './majors/comm';
 import csRequirements from './majors/cs';
+import eceRequirements from './majors/ece';
 import economicsRequirements from './majors/econ';
 import englishRequirements from './majors/engl';
 import governmentRequirements from './majors/govt';
@@ -88,6 +89,11 @@ const json: RequirementsJson = {
       name: 'Computer Science',
       schools: ['EN', 'AS'],
       requirements: csRequirements
+    },
+    ECE: {
+      name: 'Electrical and Computer Engineering',
+      schools: ['EN'],
+      requirements: eceRequirements
     },
     ECON: {
       name: 'Economics',

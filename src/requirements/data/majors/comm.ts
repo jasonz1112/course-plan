@@ -119,4 +119,4 @@ const commRequirements: readonly CollegeOrMajorRequirement[] = [
   }
 ];
 
-export default aemRequirements;
+export default commRequirements;
