@@ -124,7 +124,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     checker: null,
     operator: null,
     fulfilledBy: 'self-check'
-  },
+  }
 ];
 
 export default envEngineeringRequirements;

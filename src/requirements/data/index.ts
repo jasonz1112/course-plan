@@ -23,6 +23,7 @@ import infoRequirements from './majors/info';
 import isstRequirements from './majors/isst';
 import mechnicalEngineeringRequirements from './majors/me';
 import orieRequirements from './majors/orie';
+import psychRequirements from './majors/psych';
 import dbmeMinorRequirements from './minors/dbme';
 import csMinorRequirements from './minors/cs';
 import isstMinorRequirements from './minors/isst';
@@ -145,6 +146,11 @@ const json: RequirementsJson = {
       name: 'Operations Research and Engineering',
       schools: ['EN'],
       requirements: orieRequirements
+    }, 
+    PYSCH: {
+      name: 'Psychology', 
+      schools: ['AS'], 
+      requirements: psychRequirements
     }
   },
   minor: {
