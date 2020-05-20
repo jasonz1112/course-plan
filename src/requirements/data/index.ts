@@ -15,6 +15,7 @@ import csRequirements from './majors/cs';
 import eceRequirements from './majors/ece';
 import economicsRequirements from './majors/econ';
 import englishRequirements from './majors/engl';
+import envEngineeringRequirements from './majors/enve';
 import governmentRequirements from './majors/govt';
 import hotelAdminRequirements from './majors/hadm';
 import historyRequirements from './majors/hist';
@@ -82,7 +83,7 @@ const json: RequirementsJson = {
     },
     COMM: {
       name: 'Communications', 
-      schools: ['CALS'],
+      schools: ['AG'],
       requirements: commRequirements
     },
     CS: {
@@ -104,6 +105,11 @@ const json: RequirementsJson = {
       name: 'English',
       schools: ['AS'],
       requirements: englishRequirements
+    },
+    ENVE: {
+      name: 'Environmental Engineering',
+      schools: ['AG', 'EN'],
+      requirements: envEngineeringRequirements
     },
     GOVT: {
       name: 'Government',
