@@ -24,6 +24,7 @@ import isstRequirements from './majors/isst';
 import mechnicalEngineeringRequirements from './majors/me';
 import orieRequirements from './majors/orie';
 import psychRequirements from './majors/psych';
+import socRequirements from './majors/soc';
 import dbmeMinorRequirements from './minors/dbme';
 import csMinorRequirements from './minors/cs';
 import isstMinorRequirements from './minors/isst';
@@ -151,6 +152,11 @@ const json: RequirementsJson = {
       name: 'Psychology', 
       schools: ['AS'], 
       requirements: psychRequirements
+    }, 
+    SOC: {
+      name: 'Sociology', 
+      schools: ['AS'], 
+      requirements: socRequirements
     }
   },
   minor: {

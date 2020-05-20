@@ -1,5 +1,5 @@
 import { CollegeOrMajorRequirement } from '../../types';
-import { includesWithSubRequirements } from '../checkers-common';
+import { includesWithSubRequirements, includesWithSingleRequirement } from '../checkers-common';
 
 const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
   {
@@ -25,9 +25,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     name: 'Earth Science Core Course',
     description: 'Approved Earth Science Courses',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
-    checker: includesWithSubRequirements(
-        ['BEE 4800', 'EAS 4800', 'EAS 2250', 'EAS 2680', 'EAS 3010', 'EAS 3030', 'EAS 3050', 'EAS 5051', 'EAS 4830', 'PLSCS 2600', 'PLSCS 3650', 'NTRES 3240'],
-    ),
+    checker: includesWithSingleRequirement('BEE 4800', 'EAS 4800', 'EAS 2250', 'EAS 2680', 'EAS 3010', 'EAS 3030', 'EAS 3050', 'EAS 5051', 'EAS 4830', 'PLSCS 2600', 'PLSCS 3650', 'NTRES 3240'),
     operator: 'or',
     fulfilledBy: 'courses',
     minCount: 1
@@ -36,9 +34,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     name: 'Engineering Laboratory',
     description: 'Approved Engineering Laboratory Courses',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
-    checker: includesWithSubRequirements(
-        ['BEE 4270', 'CEE 4370', 'CEE 6370', 'CEE 4530'],
-    ),
+    checker: includesWithSingleRequirement('BEE 4270', 'CEE 4370', 'CEE 6370', 'CEE 4530'),
     operator: 'or',
     fulfilledBy: 'courses',
     minCount: 1
@@ -47,13 +43,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     name: 'Environmental Engineering Design Capstone Elective',
     description: 'At least one of the three design electives must be a capstone design elective.',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
-    checker: includesWithSubRequirements([
-        'BEE 4350', 
-        'BEE 4730',
-        'BEE 4870',
-        'CEE 4520', 
-        'CEE 4590'
-    ]),
+    checker: includesWithSingleRequirement('BEE 4350', 'BEE 4730','BEE 4870','CEE 4520', 'CEE 4590'),
     operator: 'or',
     fulfilledBy: 'courses',
     minCount: 1
@@ -62,19 +52,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     name: 'Environmental Engineering Design Electives 1 & 2',
     description: 'A total of 5 Capstone Design, Design and Major-Approved Electives must be selected from among the courses in the list below. At least three of these five courses must be Capstone Design or Design Electives. At least one of the three design electives must be a capstone design elective.',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
-    checker: includesWithSubRequirements([
-        'BEE 4350', 
-        'BEE 4730',
-        'BEE 4760',
-        'BEE 4870',
-        'CEE 4350', 
-        'CEE 4520', 
-        'CEE 4590',
-        'CEE 4650', 
-        'CEE 6370', 
-        'MAE 4021',
-        'MAE 4121'
-    ]),
+    checker: includesWithSingleRequirement('BEE 4350', 'BEE 4730', 'BEE 4760', 'BEE 4870', 'CEE 4350', 'CEE 4520', 'CEE 4590', 'CEE 4650', 'CEE 6370', 'MAE 4021', 'MAE 4121'),
     operator: 'or',
     fulfilledBy: 'courses',
     minCount: 2
@@ -83,7 +61,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
     name: 'Environmental Engineering Major Approved Electives',
     description: 'Environmental Engineering 2019-2020 Major-Approved Electives',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
-    checker: includesWithSubRequirements([
+    checker: includesWithSingleRequirement(
         'BEE 3299', 
         'BEE 3710',
         'BEE 4110', 
@@ -112,7 +90,7 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
         'MAE 4020', 
         'MAE 4120', 
         'PLSCS 4200'
-    ]),
+    ),
     operator: 'or',
     fulfilledBy: 'courses',
     minCount: 2
