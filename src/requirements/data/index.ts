@@ -27,6 +27,7 @@ import psychRequirements from './majors/psych';
 import socRequirements from './majors/soc';
 import dbmeMinorRequirements from './minors/dbme';
 import csMinorRequirements from './minors/cs';
+import ineqMinorRequirements from './minors/ineq';
 import isstMinorRequirements from './minors/isst';
 import mathMinorRequirements from './minors/math';
 import ormsMinorRequirements from './minors/orms';
@@ -169,6 +170,11 @@ const json: RequirementsJson = {
       name: 'Computer Science',
       schools: ['EN', 'AS'],
       requirements: csMinorRequirements
+    },
+    INEQ: {
+      name: 'Inequality Studies', 
+      schools: ['AS'], 
+      requirements: ineqMinorRequirements
     },
     ISST: {
       name: 'Industrial Systems and Information Technology',
