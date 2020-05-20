@@ -1,7 +1,7 @@
 import { CollegeOrMajorRequirement } from '../../types';
 import { includesWithSubRequirements } from '../checkers-common';
 
-const isstRequirements: readonly CollegeOrMajorRequirement[] = [
+const eceRequirements: readonly CollegeOrMajorRequirement[] = [
   {
     name: 'ECE Core/Foundation',
     description: 'Required Major Courses',
