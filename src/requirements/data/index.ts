@@ -33,6 +33,7 @@ import ineqMinorRequirements from './minors/ineq';
 import isstMinorRequirements from './minors/isst';
 import mathMinorRequirements from './minors/math';
 import ormsMinorRequirements from './minors/orms';
+import publicPolicyMinorRequirements from './minors/pubpolicy';
 
 const json: RequirementsJson = {
   university: {
@@ -193,15 +194,20 @@ const json: RequirementsJson = {
       schools: ['EN'],
       requirements: isstMinorRequirements
     },
+    MATH: {
+      name: 'Applied Mathematics',
+      schools: ['EN'],
+      requirements: mathMinorRequirements
+    },
     ORMS: {
       name: 'Operations Research and Management Science',
       schools: ['EN'],
       requirements: ormsMinorRequirements
     },
-    MATH: {
-      name: 'Applied Mathematics',
-      schools: ['EN'],
-      requirements: mathMinorRequirements
+    PUBPOLICY: {
+      name: 'Public Policy',
+      schools: ['AS'],
+      requirements: publicPolicyMinorRequirements
     }
   }
 };
