@@ -1,5 +1,5 @@
 import { CollegeOrMajorRequirement } from '../../types';
-import { includesWithSingleRequirement, includesWithSubRequirements } from '../checkers-common';
+import { includesWithSingleRequirement } from '../checkers-common';
 
 const ineqMinorRequirements: readonly CollegeOrMajorRequirement[] = [
   {
