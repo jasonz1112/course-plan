@@ -28,7 +28,8 @@ const eceRequirements: readonly CollegeOrMajorRequirement[] = [
   },
   {
     name: 'ECE Elective',
-    description: 'At least four ECE Electives (in addition to the CDE course) at the 3000-level or above, at least two of which must be at the 4000-level or above, totaling up to at least 14 credits (not including the credits of the CDE course)',
+    description: 'At least four ECE Electives (in addition to the CDE course) at the 3000-level or above, at least two of which must '
+    + 'be at the 4000-level or above, totaling up to at least 14 credits (not including the credits of the CDE course)',
     source: 'https://www.ece.cornell.edu/forms-undergraduate-programs',
     checker: includesWithSubRequirements(
         ['ECE 3***'],

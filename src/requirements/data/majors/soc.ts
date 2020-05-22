@@ -17,7 +17,8 @@ const socRequirements: readonly CollegeOrMajorRequirement[] = [
   }, 
   {
     name: 'Electives 3000 or above',
-    description: 'You can select your 7 elective courses from any 3- or 4-credit courses that have a SOC prefix. The only stipulation is that three of the electives should be at the 3000-level or higher.',
+    description: 'You can select your 7 elective courses from any 3- or 4-credit courses that have a SOC prefix. The only stipulation is '
+    + 'that three of the electives should be at the 3000-level or higher.',
     source: 'https://sociology.cornell.edu/major',
     checker: includesWithSingleRequirement('SOC 3***'),
     operator: 'or',
@@ -26,7 +27,8 @@ const socRequirements: readonly CollegeOrMajorRequirement[] = [
   }, 
   {
     name: 'Sociology Electives',
-    description: 'You can select your 7 elective courses from any 3- or 4-credit courses that have a SOC prefix. The only stipulation is that three of the electives should be at the 3000-level or higher.',
+    description: 'You can select your 7 elective courses from any 3- or 4-credit courses that have a SOC prefix. The only stipulation is '
+    + 'that three of the electives should be at the 3000-level or higher.',
     source: 'https://sociology.cornell.edu/major',
     checker: (course: Course): boolean => [
         'SOC',

@@ -50,7 +50,9 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
   }, 
   {
     name: 'Environmental Engineering Design Electives 1 & 2',
-    description: 'A total of 5 Capstone Design, Design and Major-Approved Electives must be selected from among the courses in the list below. At least three of these five courses must be Capstone Design or Design Electives. At least one of the three design electives must be a capstone design elective.',
+    description: 'A total of 5 Capstone Design, Design and Major-Approved Electives must be selected from among the courses in the list below. '
+    + 'At least three of these five courses must be Capstone Design or Design Electives. At least one of the three design electives must be a capstone '
+    + 'design elective.',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
     checker: includesWithSingleRequirement('BEE 4350', 'BEE 4730', 'BEE 4760', 'BEE 4870', 'CEE 4350', 'CEE 4520', 'CEE 4590', 'CEE 4650', 'CEE 6370', 'MAE 4021', 'MAE 4121'),
     operator: 'or',
@@ -97,7 +99,9 @@ const envEngineeringRequirements: readonly CollegeOrMajorRequirement[] = [
   }, 
   {
     name: 'Other Environmental Engineering Electives',
-    description: 'Other Environmental Engineering Electives to bring total category to 57 credits. These will generally consist of technical engineering courses at 2000 level or above from BEE, CEE or the College of Engineering. A maximum of 4 credits of BEE 4970-4990 or CEE 3090, 4010 (teaching, research, and individual projects) may be used in this category, without a petition.',
+    description: 'Other Environmental Engineering Electives to bring total category to 57 credits. These will generally consist of '
+    + 'technical engineering courses at 2000 level or above from BEE, CEE or the College of Engineering. A maximum of 4 credits of '
+    + 'BEE 4970-4990 or CEE 3090, 4010 (teaching, research, and individual projects) may be used in this category, without a petition.',
     source: 'https://www.cee.cornell.edu/cee/programs/environmental-engineering-major/handbook',
     checker: null,
     operator: null,

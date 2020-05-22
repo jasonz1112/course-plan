@@ -39,7 +39,8 @@ const esRequirements: readonly CollegeOrMajorRequirement[] = [
   }, 
   {
     name: 'Chemistry/Physics',
-    description: 'Choose one course. AP credit accepted to fulfill requirement: AP Chemistry score of 5 AP Physics 1 or AP Physics 2 score of 5 AP Physics C: Mechanics score of 5 Health careers students should consult with their advisor about meeting this requirement.',
+    description: 'Choose one course. AP credit accepted to fulfill requirement: AP Chemistry score of 5 AP Physics 1 or AP Physics 2 '
+    + 'score of 5 AP Physics C: Mechanics score of 5 Health careers students should consult with their advisor about meeting this requirement.',
     source: 'https://environment.cornell.edu/education/major-requirements/core-curriculum/',
     checker: includesWithSingleRequirement(
         'CHEM 1560',
