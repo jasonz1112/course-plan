@@ -33,11 +33,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import NewCourse from '@/components/Modals/NewCourse.vue';
-import NewSemester from '@/components/Modals/NewSemester.vue';
+import NewCourse from '@/components/Modals/NewCourse/NewCourse.vue';
 
 Vue.component('newCourse', NewCourse);
-Vue.component('newSemester', NewSemester);
 
 export default Vue.extend({
   props: {

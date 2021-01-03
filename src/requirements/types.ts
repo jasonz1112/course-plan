@@ -32,6 +32,8 @@ type RequirementCommon = {
   readonly description: string;
   /** The source with more information on the requirement. (This should be a URL string.) */
   readonly source: string;
+  /** If this is set to true, then an edge to the course doesn't count towards double counting. */
+  readonly allowCourseDoubleCounting?: true;
   readonly progressBar?: boolean;
 };
 /**
@@ -70,6 +72,7 @@ type RequirementFulfillmentInformation<T = {}> =
           readonly totalCount?: number;
           readonly counting: 'credits' | 'courses';
           readonly operator: 'and' | 'or';
+          readonly description: string;
         } & T;
       };
     };
@@ -154,9 +157,7 @@ export type GroupedRequirementFulfillmentReport = {
   readonly reqs: readonly RequirementFulfillment<RequirementFulfillmentStatistics>[];
 };
 
-export type DisplayableRequirementFulfillment = RequirementFulfillment<
-  RequirementFulfillmentStatistics
->;
+export type DisplayableRequirementFulfillment = RequirementFulfillment<RequirementFulfillmentStatistics>;
 
 export type SingleMenuRequirement = {
   readonly ongoing: DisplayableRequirementFulfillment[];
@@ -168,3 +169,20 @@ export type SingleMenuRequirement = {
   fulfilled?: number;
   required?: number;
 };
+
+export type CrseInfo = {
+  readonly roster: string;
+  crseIds: number[];
+};
+
+export type CompletedSubReqCourseSlot = {
+  readonly isCompleted: true;
+  readonly courses: readonly CourseTaken[];
+};
+
+export type IncompleteSubReqCourseSlot = {
+  readonly isCompleted: false;
+  readonly courses: readonly CrseInfo[];
+};
+
+export type SubReqCourseSlot = CompletedSubReqCourseSlot | IncompleteSubReqCourseSlot;

@@ -201,8 +201,12 @@ const calsSocialSciencesAndHumanitiesRequiement: CollegeOrMajorRequirement = {
   ),
   operator: 'and',
   fulfilledBy: 'courses',
+<<<<<<< HEAD
   minCount: 3,
   // totalCount: 4,
+=======
+  minCount: 4,
+>>>>>>> 7cbc71b4a56005231ffb9ed25c0b88c2c5a90fb5
 };
 
 const calsHumanDiversityRequirement: CollegeOrMajorRequirement = {
