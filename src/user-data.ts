@@ -36,17 +36,16 @@ export type FirestoreSemester = {
 export type FirestoreCollege = { readonly acronym: string; readonly fullName: string };
 export type FirestoreMajorOrMinor = { readonly acronym: string; readonly fullName: string };
 export type FirestoreAPIBExam = {
-  readonly equivCourse: readonly string[];
+  readonly type: 'AP' | 'IB';
   readonly score: number;
   readonly subject: string;
-  readonly type: 'AP' | 'IB';
 };
 export type FirestoreTransferClass = {
   readonly class: string;
   readonly course: CornellCourseRosterCourse;
   readonly credits: number;
 };
-export type FirestoreNestedUserData = {
+export type FirestoreOnboardingUserData = {
   readonly class: readonly FirestoreTransferClass[];
   readonly colleges: readonly FirestoreCollege[];
   readonly majors: readonly FirestoreMajorOrMinor[];
@@ -61,7 +60,7 @@ export type FirestoreUserData = {
   readonly toggleableRequirementChoices: AppToggleableRequirementChoices;
   readonly subjectColors: { readonly [subject: string]: string };
   readonly uniqueIncrementer: number;
-  readonly userData: FirestoreNestedUserData;
+  readonly userData: FirestoreOnboardingUserData;
 };
 
 export type CornellCourseRosterCourse = {
@@ -100,13 +99,13 @@ export type AppUser = {
   readonly college: string;
   // FN === Full Name
   readonly collegeFN: string;
-  major: readonly string[];
-  majorFN: readonly string[];
-  minor: readonly string[];
-  minorFN: readonly string[];
-  exam: readonly FirestoreAPIBExam[];
-  transferCourse: FirestoreTransferClass[];
-  tookSwim: 'yes' | 'no';
+  readonly major: readonly string[];
+  readonly majorFN: readonly string[];
+  readonly minor: readonly string[];
+  readonly minorFN: readonly string[];
+  readonly exam: readonly FirestoreAPIBExam[];
+  readonly transferCourse: readonly FirestoreTransferClass[];
+  readonly tookSwim: 'yes' | 'no';
 };
 
 export type AppMajor = {
@@ -142,7 +141,6 @@ export type AppCourse = {
 
 export type AppSemester = {
   readonly courses: readonly AppCourse[];
-  id: number;
   readonly type: FirestoreSemesterType;
   readonly year: number;
 };
@@ -198,11 +196,10 @@ export const cornellCourseRosterCourseToAppCourse = (
   const creditRange = createCourseCreditRange(course);
   // Semesters: remove periods and split on ', '
   // alternateSemesters option in case catalogWhenOffered for the course is null, undef, or ''
-  const catalogWhenOfferedDoesNotExist =
-    !course.catalogWhenOffered || course.catalogWhenOffered === '';
-  const alternateSemesters = catalogWhenOfferedDoesNotExist
-    ? []
-    : course.catalogWhenOffered!.replace(/\./g, '').split(', ');
+  const alternateSemesters =
+    !course.catalogWhenOffered || course.catalogWhenOffered === ''
+      ? []
+      : course.catalogWhenOffered.replace(/\./g, '').split(', ');
   const semesters = alternateSemesters;
 
   // Get prereqs of course as string (). '' if neither available because '' is interpreted as false
@@ -241,10 +238,10 @@ export const cornellCourseRosterCourseToAppCourse = (
 
   // Distribution of course (e.g. MQR-AS)
   // alternateDistributions option in case catalogDistr for the course is null, undef, ''
-  const catalogDistrDoesNotExist = !course.catalogDistr || course.catalogDistr === '';
-  const alternateDistributions = catalogDistrDoesNotExist
-    ? ['']
-    : /\(([^)]+)\)/.exec(course.catalogDistr!)![1].split(', ');
+  const alternateDistributions =
+    !course.catalogDistr || course.catalogDistr === ''
+      ? ['']
+      : (/\(([^)]+)\)/.exec(course.catalogDistr) || [])[1].split(', ');
   const distributions = alternateDistributions;
 
   // Create course from saved color. Otherwise, create course from subject color group
@@ -319,69 +316,55 @@ export const firestoreCourseToAppCourse = (
   };
 };
 
-const firestoreSemesterToAppSemester = (
-  { courses, type, year }: FirestoreSemester,
-  semesterID: number
-): AppSemester => {
-  return {
-    id: semesterID,
-    courses: courses.map(course => firestoreCourseToAppCourse(course, false)),
-    type,
-    year,
-  };
-};
+const firestoreSemesterToAppSemester = ({
+  courses,
+  type,
+  year,
+}: FirestoreSemester): AppSemester => ({
+  courses: courses.map(course => firestoreCourseToAppCourse(course, false)),
+  type,
+  year,
+});
 
 export const firestoreSemestersToAppSemesters = (
   firestoreSemesters: readonly FirestoreSemester[]
-): AppSemester[] => {
-  return firestoreSemesters.map((firebaseSem, index) => {
-    return firestoreSemesterToAppSemester(firebaseSem, index + 1);
-  });
-};
+): AppSemester[] => firestoreSemesters.map(firestoreSemesterToAppSemester);
 
-export const createAppUser = (data: FirestoreNestedUserData, name: FirestoreUserName): AppUser => {
+export const createAppUser = (
+  data: FirestoreOnboardingUserData,
+  name: FirestoreUserName
+): AppUser => {
+  const major: string[] = [];
+  const majorFN: string[] = [];
+  const minor: string[] = [];
+  const minorFN: string[] = [];
+  if ('majors' in data) {
+    data.majors.forEach(({ acronym, fullName }) => {
+      major.push(acronym);
+      majorFN.push(fullName);
+    });
+  }
+  if ('minors' in data) {
+    data.minors.forEach(({ acronym, fullName }) => {
+      minor.push(acronym);
+      minorFN.push(fullName);
+    });
+  }
+
   const user: AppUser = {
-    // TODO: take into account multiple majors and colleges
+    // TODO: take into account multiple colleges
     college: data.colleges[0].acronym,
     collegeFN: data.colleges[0].fullName,
     firstName: name.firstName,
     middleName: name.middleName,
     lastName: name.lastName,
-    major: [],
-    majorFN: [],
-    minor: [],
-    minorFN: [],
-    exam: [],
-    transferCourse: [],
+    major,
+    majorFN,
+    minor,
+    minorFN,
+    exam: 'exam' in data && data.exam.length > 0 ? [...data.exam] : [],
+    transferCourse: 'class' in data && data.class.length > 0 ? [...data.class] : [],
     tookSwim: data.tookSwim,
   };
-  if ('exam' in data && data.exam.length > 0) {
-    user.exam = [...data.exam];
-  }
-  if ('class' in data && data.class.length > 0) {
-    user.transferCourse = [...data.class];
-  }
-
-  if ('majors' in data && data.majors.length > 0) {
-    const majors: string[] = [];
-    const majorsFN: string[] = [];
-    data.majors.forEach(major => {
-      majors.push(major.acronym);
-      majorsFN.push(major.fullName);
-    });
-    user.major = majors;
-    user.majorFN = majorsFN;
-  }
-  if ('minors' in data && data.minors.length > 0) {
-    const minors: string[] = [];
-    const minorsFN: string[] = [];
-    data.minors.forEach(minor => {
-      minors.push(minor.acronym);
-      minorsFN.push(minor.fullName);
-    });
-    user.minor = minors;
-    user.minorFN = minorsFN;
-  }
-
   return user;
 };

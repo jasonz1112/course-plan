@@ -9,12 +9,9 @@
     @click="closeBar"
     :key="key"
   >
-    <modal
-      id="semesterModal"
+    <new-semester-modal
       class="semester-modal"
       :class="{ 'modal--block': isSemesterModalOpen }"
-      type="semester"
-      ref="modalComponent"
       :currentSemesters="semesters"
       @add-semester="addSemester"
       @close-semester-modal="closeSemesterModal"
@@ -40,32 +37,31 @@
       </div>
     </div>
     <confirmation
-      :id="'semesterConfirmation'"
       class="semesterView-confirmation"
       :class="{ 'modal--flex': isSemesterConfirmationOpen }"
       :text="confirmationText"
     />
     <semester-caution
-      :id="'semesterCaution'"
       class="semesterView-caution"
       :class="{ 'modal--flex': isCautionModalOpen }"
       :text="cautionText"
     />
     <div class="semesterView-content">
       <div
-        v-for="sem in semesters"
-        :key="sem.id"
+        v-for="(sem, semesterIndex) in semesters"
+        :key="`${sem.year}-${sem.type}`"
         class="semesterView-wrapper"
         :class="{ 'semesterView-wrapper--compact': compact }"
       >
         <semester
           v-bind="sem"
           ref="semester"
+          :semesterIndex="semesterIndex"
           :compact="compact"
           :activatedCourse="activatedCourse"
           :duplicatedCourseCodeList="duplicatedCourseCodeList"
           :semesters="semesters"
-          :isFirstSem="checkIfFirstSem(sem.id)"
+          :isFirstSem="checkIfFirstSem(sem)"
           :reqs="reqs"
           @updateBar="updateBar"
           @new-semester="openSemesterModal"
@@ -98,16 +94,15 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-// @ts-ignore
-import clone from 'clone';
 import Course from '@/components/Course.vue';
 import Semester from '@/components/Semester/Semester.vue';
 import Confirmation from '@/components/Confirmation.vue';
 import SemesterCaution from '@/components/Semester/SemesterCaution.vue';
+import NewSemesterModal from '@/components/Modals/NewSemesterModal.vue';
 import DeleteSemester from '@/components/Modals/DeleteSemester.vue';
 import EditSemester from '@/components/Modals/EditSemester.vue';
 
-import { auth, userDataCollection } from '@/firebaseConfig';
+import { auth, semestersCollection } from '@/firebaseConfig';
 import {
   AppCourse,
   AppSemester,
@@ -116,11 +111,13 @@ import {
   FirestoreSemesterType,
 } from '@/user-data';
 import { SingleMenuRequirement } from '@/requirements/types';
+import { checkNotNull } from '@/utilities';
 
 Vue.component('course', Course);
 Vue.component('semester', Semester);
 Vue.component('confirmation', Confirmation);
 Vue.component('semester-caution', SemesterCaution);
+Vue.component('new-semester-modal', NewSemesterModal);
 Vue.component('deletesemester', DeleteSemester);
 Vue.component('editsemester', EditSemester);
 
@@ -135,7 +132,6 @@ const SeasonsEnum = Object.freeze({
 export default Vue.extend({
   props: {
     semesters: Array as PropType<readonly AppSemester[]>,
-    currSemID: Number,
     compact: Boolean,
     isBottomBar: Boolean,
     isBottomBarExpanded: Boolean,
@@ -173,8 +169,8 @@ export default Vue.extend({
     this.buildDuplicateCautions();
   },
   methods: {
-    checkIfFirstSem(id: number) {
-      return this.semesters[0].id === id;
+    checkIfFirstSem(semester: AppSemester) {
+      return this.semesters[0].year === semester.year && this.semesters[0].type === semester.type;
     },
     setCompact() {
       if (!this.compact) {
@@ -200,7 +196,6 @@ export default Vue.extend({
       const allCourseSet = new Set<string>();
       const duplicatedCourseCodeList: string[] = [];
       if (this.semesters) {
-        const coursesMap: Record<string, boolean> = {};
         this.semesters.forEach(semester => {
           semester.courses.forEach(course => {
             const code = `${course.subject} ${course.number}`;
@@ -242,14 +237,7 @@ export default Vue.extend({
       this.isSemesterModalOpen = false;
     },
     createSemester(courses: readonly AppCourse[], type: FirestoreSemesterType, year: number) {
-      const semester = {
-        courses,
-        id: this.currSemID,
-        type,
-        year,
-      };
-      this.$emit('increment-semID');
-      return semester;
+      return { courses, type, year };
     },
     addSemester(type: FirestoreSemesterType, year: number) {
       const newSem = this.createSemester([], type, year);
@@ -280,7 +268,7 @@ export default Vue.extend({
       // Update requirements menu from dashboard
       this.$emit('edit-semesters', newSemesters);
     },
-    addCourseToSemester(season: FirestoreSemesterType, year: number, newCourse: any) {
+    addCourseToSemester(season: FirestoreSemesterType, year: number, newCourse: AppCourse) {
       let semesterFound = false;
       const newSemestersWithCourse = this.semesters.map(sem => {
         if (sem.type === season && sem.year === year) {
@@ -309,23 +297,24 @@ export default Vue.extend({
       if (a.year < b.year) {
         return 1;
       }
-      // @ts-ignore
+      // @ts-expect-error: typescript cannot understand Fall -> fall conversion by .toLowerCase()
       if (SeasonsEnum[a.type.toLowerCase()] < SeasonsEnum[b.type.toLowerCase()]) {
         return 1;
       }
       return -1;
     },
-    editSemester(id: number, updater: (oldSemester: AppSemester) => AppSemester) {
-      let count = 1;
+    editSemester(
+      year: number,
+      type: FirestoreSemesterType,
+      updater: (oldSemester: AppSemester) => AppSemester
+    ) {
       const newSemesters = this.semesters
-        .map((currentSemester, index, array) =>
-          currentSemester.id === id ? updater(currentSemester) : currentSemester
+        .map(currentSemester =>
+          currentSemester.year === year && currentSemester.type === type
+            ? updater(currentSemester)
+            : currentSemester
         )
         .sort(this.compare);
-      newSemesters.forEach(sem => {
-        sem.id = count;
-        count += 1;
-      });
       this.$emit('edit-semesters', newSemesters);
     },
     updateBar(course: AppCourse, colorJustChanged: string, color: string) {
@@ -369,29 +358,16 @@ export default Vue.extend({
      */
     updateFirebaseSemester() {
       // TODO: make user / docRef global
-      const user = auth.currentUser!;
-      const userEmail = user.email!;
-      const docRef = userDataCollection.doc(userEmail);
+      const userEmail = checkNotNull(checkNotNull(auth.currentUser).email);
+      const docRef = semestersCollection.doc(userEmail);
 
-      docRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            const firebaseSemesters: FirestoreSemester[] = (clone(
-              this.semesters
-            ) as AppSemester[]).map(sem => ({
-              ...sem,
-              courses: sem.courses.map(course => this.toFirebaseCourse(course)),
-            }));
-            docRef.update({ semesters: firebaseSemesters });
-          } else {
-            // doc.data() will be undefined in this case
-            console.log('No such document!');
-          }
-        })
-        .catch(error => {
-          console.log('Error getting document:', error);
-        });
+      const firebaseSemesters: FirestoreSemester[] = this.semesters.map(sem => ({
+        ...sem,
+        courses: sem.courses.map(course => this.toFirebaseCourse(course)),
+      }));
+      docRef.set({ semesters: firebaseSemesters }).catch(error => {
+        console.error('Error writing document:', error);
+      });
     },
   },
 });

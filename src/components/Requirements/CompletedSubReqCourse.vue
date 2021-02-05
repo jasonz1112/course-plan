@@ -1,7 +1,7 @@
 <template>
   <div class="completedsubreqcourse">
     <div class="completed-reqCourses-course-wrapper">
-      <div id="completedSeparator" class="separator"></div>
+      <div class="separator"></div>
       <div class="completed-reqCourses-course-heading-wrapper">
         <div class="completed-reqCourses-course-heading-course">
           <span class="completed-reqCourses-course-heading-check"
@@ -18,7 +18,6 @@
       </div>
       <div class="completed-reqCourses-course-object-wrapper">
         <reqcourse
-          :id="courseSubject + courseNumber"
           :color="color"
           :subject="courseSubject"
           :number="courseNumber"
@@ -36,15 +35,9 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import firebase from 'firebase/app';
 import ReqCourse from '@/components/Requirements/ReqCourse.vue';
 import { DisplayableRequirementFulfillment, CourseTaken } from '@/requirements/types';
-import {
-  AppCourse,
-  FirestoreSemesterCourse,
-  AppSemester,
-  FirestoreSemesterType,
-} from '@/user-data';
+import { AppSemester, FirestoreSemesterType } from '@/user-data';
 
 Vue.component('reqcourse', ReqCourse);
 
@@ -165,7 +158,7 @@ export default Vue.extend({
         &-course {
           font-size: 14px;
           line-height: 17px;
-          color: $lightLabelGray;
+          color: $lightPlaceholderGray;
         }
       }
       &-object {
@@ -177,7 +170,7 @@ export default Vue.extend({
         &-semester {
           font-size: 14px;
           line-height: 16px;
-          color: $darkLabelGray;
+          color: $lightPlaceholderGray;
           margin-top: 0.6rem;
           font-style: italic;
         }
@@ -188,7 +181,7 @@ export default Vue.extend({
 
 .reqCourse {
   &-button {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 15px;
     color: $yuxuanBlue;
     padding: 0.2rem;

@@ -1,6 +1,6 @@
 <template>
   <div class="deleteSemesterModal">
-    <div class="deleteSemesterModal-content" id="deleteSemester">
+    <div class="deleteSemesterModal-content">
       <div class="deleteSemesterModal-top">
         <span class="deleteSemesterModal-title">{{ title }}</span>
         <img
@@ -33,13 +33,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import NewCourse from '@/components/Modals/NewCourse/NewCourse.vue';
-
-Vue.component('newCourse', NewCourse);
 
 export default Vue.extend({
   props: {
-    deleteSemID: Number,
     deleteSemType: String,
     deleteSemYear: Number,
   },
@@ -74,7 +70,7 @@ export default Vue.extend({
   padding: 1rem;
 
   &-content {
-    background: #ffffff;
+    background: $white;
     border-radius: 9px;
     margin-left: auto;
     margin-right: auto;
@@ -103,14 +99,14 @@ export default Vue.extend({
     font-weight: 600;
     font-size: 20px;
     line-height: 24px;
-    color: #3d3d3d;
+    color: $primaryGray;
   }
 
   &-text {
     font-weight: normal;
     font-size: 14px;
     line-height: 17px;
-    color: #3d3d3d;
+    color: $primaryGray;
   }
 
   &-buttonWrapper {

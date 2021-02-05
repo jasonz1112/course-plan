@@ -87,23 +87,16 @@ import RequirementHeader from '@/components/Requirements/RequirementHeader.vue';
 import SubRequirement from '@/components/Requirements/SubRequirement.vue';
 
 import { SingleMenuRequirement } from '@/requirements/types';
-import {
-  AppUser,
-  AppMajor,
-  AppMinor,
-  FirestoreSemesterCourse,
-  AppCourse,
-  AppSemester,
-} from '@/user-data';
+import { AppUser, AppMajor, AppMinor, AppCourse, AppSemester } from '@/user-data';
 
 Vue.component('requirementheader', RequirementHeader);
 Vue.component('subrequirement', SubRequirement);
 
 // reqGroupColorMap maps reqGroup to an array [<hex color for progress bar>, <color for arrow image>]
 const reqGroupColorMap = {
-  COLLEGE: ['1AA9A5', 'blue'],
-  MAJOR: ['105351', 'green'],
-  MINOR: ['92C3E6', 'lightblue'],
+  COLLEGE: ['4D7D92', 'sangBlue'],
+  MAJOR: ['148481', 'emGreen'],
+  MINOR: ['105351', 'chrisGreen'],
 };
 
 export default Vue.extend({
@@ -119,7 +112,7 @@ export default Vue.extend({
     user: Object as PropType<AppUser>,
     showMajorOrMinorRequirements: Boolean,
     numOfColleges: Number,
-    rostersFromLastTwoYears: Array as PropType<readonly String[]>,
+    rostersFromLastTwoYears: Array as PropType<readonly string[]>,
     lastLoadedShowAllCourseId: Number,
     semesters: Array as PropType<readonly AppSemester[]>,
   },

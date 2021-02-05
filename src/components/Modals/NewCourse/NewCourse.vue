@@ -1,17 +1,15 @@
 <template>
   <div class="newCourse">
-    <div v-if="!isOnboard" class="newCourse-text">{{ text }}</div>
+    <div class="newCourse-text">{{ text }}</div>
     <!-- TODO: for some reason this breaks the dropdown <div v-if="selected" class="newCourse-name newCourse-requirements-container">{{ selectedCourse }}</div> -->
-    <div class="autocomplete">
-      <input
-        :class="onboardingStyle(placeholderText, isOnboard)"
-        :id="'dropdown-' + semesterID"
-        :ref="'dropdown-' + semesterID"
-        :placeholder="placeholder"
-        @keyup.esc="closeCourseModal"
-        @keyup.enter="addCourse"
-      />
-    </div>
+    <course-selector
+      search-box-class-name="newCourse-dropdown"
+      :key="courseSelectorKey"
+      :placeholder="placeholder"
+      :autoFocus="true"
+      @on-escape="closeCourseModal"
+      @on-select="onSelectCourse"
+    />
     <div v-if="isCourseModelSelectingSemester && !selected">
       <div class="newCourse-title">Add this class to the following semester</div>
       <div class="newCourse-semester-edit">
@@ -23,7 +21,7 @@
         ></newSemester>
       </div>
     </div>
-    <div v-if="!isOnboard && selected">
+    <div v-if="selected">
       <!-- if a course is selected -->
       <div v-if="isCourseModelSelectingSemester">
         <div class="newCourse-text">Selected Semester</div>
@@ -70,11 +68,7 @@
             :isClickable="true"
             @edit-req="editReq"
           />
-          <binaryButton
-            v-for="choice in binaryPotentialReqs"
-            :key="choice[0]"
-            :choices="choice"
-          ></binaryButton>
+          <binary-button v-for="choice in binaryPotentialReqs" :key="choice[0]" :choices="choice" />
         </div>
       </div>
       <div v-if="!editMode" class="newCourse-link" @click="toggleEditMode()">
@@ -84,29 +78,32 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import coursesJSON from '@/assets/courses/courses.json';
+<script lang="ts">
+import Vue, { PropType } from 'vue';
 import EditRequirement from '@/components/Modals/NewCourse/EditRequirement.vue';
 import BinaryButton from '@/components/Modals/NewCourse/BinaryButton.vue';
+import CourseSelector, {
+  MatchingCourseSearchResult,
+} from '@/components/Modals/NewCourse/CourseSelector.vue';
+
+import fall from '@/assets/images/fallEmoji.svg';
+import spring from '@/assets/images/springEmoji.svg';
+import winter from '@/assets/images/winterEmoji.svg';
+import summer from '@/assets/images/summerEmoji.svg';
+import { FirestoreSemesterType } from '@/user-data';
+import { SingleMenuRequirement } from '@/requirements/types';
 
 Vue.component('editRequirement', EditRequirement);
-Vue.component('binaryButton', BinaryButton);
-
-const fall = require('@/assets/images/fallEmoji.svg');
-const spring = require('@/assets/images/springEmoji.svg');
-const winter = require('@/assets/images/winterEmoji.svg');
-const summer = require('@/assets/images/summerEmoji.svg');
 
 export default Vue.extend({
+  components: { BinaryButton, CourseSelector },
   props: {
-    isOnboard: Boolean,
-    semesterID: Number,
+    semesterID: String,
     placeholderText: String,
-    season: String,
+    season: String as PropType<FirestoreSemesterType>,
     year: Number,
     isCourseModelSelectingSemester: Boolean,
-    reqs: Array,
+    reqs: Array as PropType<readonly SingleMenuRequirement[]>,
   },
   data() {
     return {
@@ -117,215 +114,70 @@ export default Vue.extend({
         Summer: summer,
       },
       selected: false,
-      requirements: [],
-      potentialReqs: [],
-      binaryPotentialReqs: [],
+      requirements: [] as string[],
+      potentialReqs: [] as string[],
+      binaryPotentialReqs: [] as (readonly [string, string])[],
       editMode: false,
-      selectedCourse: '',
-      selectedCourseID: -1,
+      courseSelectorKey: 0,
+      selectedCourse: null as MatchingCourseSearchResult | null,
       selectorSemesterId: '',
-      selectedReqs: [],
+      selectedReqs: [] as string[],
     };
   },
   computed: {
-    text() {
+    text(): string {
       return 'Search Course Roster';
     },
-    placeholder() {
+    placeholder(): string {
       return this.placeholderText !== 'Select one'
         ? this.placeholderText
-        : '"CS110", "Multivariable Calculus", etc';
+        : '"CS1110", "Multivariable Calculus", etc';
     },
-    potReqs() {
+    potReqs(): string {
       return this.potentialReqs.join(', ');
     },
-    relatedReqs() {
+    relatedReqs(): string {
       return this.requirements.join(', ');
     },
-    hasReqs() {
+    hasReqs(): boolean {
       return this.requirements.length !== 0;
     },
-    hasPotReqs() {
+    hasPotReqs(): boolean {
       return this.potentialReqs.length !== 0;
     },
-    editReqsText() {
+    editReqsText(): string {
       return this.potentialReqs.length !== 0 ? 'Add these Requirements' : 'Edit Requirements';
     },
-  },
-  mounted() {
-    // Activate focus and set input to empty
-    const input = document.getElementById(`dropdown-${this.semesterID}`);
-    input.value = '';
-    input.focus();
-
-    this.autocomplete(document.getElementById(`dropdown-${this.semesterID}`), coursesJSON);
   },
   methods: {
     closeCourseModal() {
       this.$emit('close-course-modal');
     },
-    autocomplete(inp, courses) {
-      /* the autocomplete function takes two arguments,
-      @inp: input
-      @courses: object of courses from JSON
-      */
-      let currentFocus;
-      const inpCopy = inp;
-      function removeActive(x) {
-        /* a function to remove the "active" class from all autocomplete items: */
-        for (let i = 0; i < x.length; i += 1) {
-          x[i].classList.remove('autocomplete-active');
-        }
-      }
-      function addActive(x) {
-        /* a function to classify an item as "active": */
-        if (!x) return;
-        /* start by removing the "active" class on all items: */
-        removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = x.length - 1;
-        /* add class "autocomplete-active": */
-        x[currentFocus].classList.add('autocomplete-active');
-      }
-      function closeAllLists(elmnt) {
-        /* close all autocomplete lists in the document,
-        except the one passed as an argument: */
-        const x = document.getElementsByClassName('autocomplete-items');
-        for (let i = 0; i < x.length; i += 1) {
-          if (elmnt !== x[i] && elmnt !== inp) {
-            x[i].parentNode.removeChild(x[i]);
-          }
-        }
-      }
-      /* execute a function when someone writes in the text field: */
-      inp.addEventListener('input', () => {
-        let a;
-        const val = inp.value.toUpperCase();
-        /* close any already open lists of autocompleted values */
-        closeAllLists();
-        if (!val) return;
-        currentFocus = -1;
-        /* create a DIV element that will contain the items (values): */
-        // search after value length of 2 to reduce search times of courses
-        if (val.length >= 2) {
-          a = document.createElement('DIV');
-          a.setAttribute('id', `${inp.id}autocomplete-list`);
-          a.setAttribute('class', 'autocomplete-items');
-          /* append the DIV element as a child of the autocomplete container: */
-          inp.parentNode.appendChild(a);
-
-          /* code array for results that contain course code and title array for results that contain title */
-          const code = [];
-          const title = [];
-
-          for (const attr in courses) {
-            if (courses[attr]) {
-              const result = {
-                title: `${attr}: ${courses[attr].t}`,
-                roster: courses[attr].r,
-                id: courses[attr].i,
-              };
-              if (attr.toUpperCase().includes(val) && attr !== 'lastScanned') {
-                code.push(result);
-              } else if (courses[attr].t && courses[attr].t.toUpperCase().includes(val)) {
-                title.push(result);
-              }
-            }
-          }
-
-          // Sort both results by title
-          code.sort((first, second) => first.title - second.title);
-          title.sort((first, second) => first.title - second.title);
-
-          /* prioritize code matches over title matches */
-          let match = code.concat(title);
-
-          // limit the number of results to 10
-          match = match.slice(0, 10);
-
-          match.forEach(newTitle => {
-            /* check if the item starts with the same letters as the text field value: */
-            /* create a DIV element for each matching element: */
-            /* reinitialize b for every input div */
-            const div = document.createElement('DIV');
-            /* make the matching letters bold: */
-            div.innerHTML = newTitle.title;
-            /* insert a input field that will hold the current array item's value: */
-            div.innerHTML += `<input type='hidden' value="${newTitle.title}" name="${newTitle.roster}">`;
-            /* execute a function when someone clicks on the item value (DIV element): */
-            div.addEventListener('click', () => {
-              /* insert the value for the autocomplete text field: */
-              inpCopy.value = newTitle.title;
-              inpCopy.name = newTitle.roster;
-              this.selectedCourseID = newTitle.id;
-              this.selectedCourse = newTitle.title;
-              this.selected = true;
-              this.$emit('toggle-left-button');
-              this.$emit('allow-add', false);
-              this.getReqsRelatedToCourse();
-
-              /* close the list of autocompleted values,
-                  (or any other open lists of autocompleted values: */
-              closeAllLists();
-              if (this.isOnboard) {
-                this.addCourse();
-              }
-            });
-            a.appendChild(div);
-          });
-        }
-      });
-      /* execute a function presses a key on the keyboard: */
-      inp.addEventListener('keydown', e => {
-        let x = document.getElementById(`${inp.id}autocomplete-list`);
-        if (x) x = x.getElementsByTagName('div');
-        if (e.keyCode === 40) {
-          /* If the arrow DOWN key is pressed,
-            increase the currentFocus variable: */
-          currentFocus += 1;
-          /* and and make the current item more visible: */
-          addActive(x);
-        } else if (e.keyCode === 38) {
-          // up
-          /* If the arrow UP key is pressed,
-            decrease the currentFocus variable: */
-          currentFocus -= 1;
-          /* and and make the current item more visible: */
-          addActive(x);
-        } else if (e.keyCode === 13) {
-          /* If the ENTER key is pressed, prevent the form from being submitted, */
-          e.preventDefault();
-          if (currentFocus > -1) {
-            /* and simulate a click on the "active" item: */
-            if (x) x[currentFocus].click();
-          }
-        }
-      });
-      /* execute a function when someone clicks in the document: */
-      document.addEventListener('click', e => {
-        closeAllLists(e.target);
-      });
-    },
-    checkIfLast(elem, list) {
-      return elem === list[list.length - 1];
-    },
     toggleEditMode() {
       this.editMode = !this.editMode;
       this.$emit('edit-mode');
     },
+    onSelectCourse(result: MatchingCourseSearchResult) {
+      this.$emit('toggle-left-button');
+      this.$emit('allow-add', false);
+      this.$emit('on-course-select', result);
+      this.selected = true;
+      this.selectedCourse = result;
+      this.getReqsRelatedToCourse(result);
+    },
     reset() {
       this.editMode = false;
       this.selected = false;
-      this.selectedCourse = '';
-      this.selectedCourseID = -1;
+      this.courseSelectorKey += 1;
+      this.selectedCourse = null;
       this.selectedReqs = [];
       this.requirements = [];
       this.potentialReqs = [];
     },
-    updateSemProps(season, year) {
+    updateSemProps(season: string, year: number) {
       this.$emit('updateSemProps', season, year);
     },
-    getReqsRelatedToCourse() {
+    getReqsRelatedToCourse(selectedCourse: MatchingCourseSearchResult) {
       const relatedReqs = [];
       const potReqs = [];
 
@@ -334,15 +186,14 @@ export default Vue.extend({
         const subreqs = this.reqs[i].ongoing;
         for (let j = 0; j < subreqs.length; j += 1) {
           // requirements
-          if (subreqs[j].fulfilledBy === 'courses') {
-            const { courses } = subreqs[j].requirement;
-            if (typeof courses !== 'undefined') {
-              for (let k = 0; k < courses.length; k += 1) {
-                for (const [_, ids] of Object.entries(courses[k])) {
-                  if (ids.includes(this.selectedCourseID)) {
-                    relatedReqs.push(subreqs[j].requirement.name);
-                    break;
-                  }
+          const subRequirement = subreqs[j].requirement;
+          if (subRequirement.fulfilledBy === 'courses') {
+            const { courses } = subRequirement;
+            for (let k = 0; k < courses.length; k += 1) {
+              for (const [, ids] of Object.entries(courses[k])) {
+                if (ids.includes(selectedCourse.id)) {
+                  relatedReqs.push(subreqs[j].requirement.name);
+                  break;
                 }
               }
             }
@@ -357,8 +208,7 @@ export default Vue.extend({
         }
       }
     },
-    editReq(data) {
-      const { name, isSelected } = data;
+    editReq({ name, isSelected }: Readonly<{ name: string; isSelected: boolean }>) {
       if (isSelected) {
         this.selectedReqs.push(name); // add to selectedReqs
       } else {
@@ -395,26 +245,10 @@ export default Vue.extend({
         this.$emit('allow-add', false);
       } else {
         this.selected = false;
-        // copied code from line 125 and 209 TODO - refactor
-        const inpCopy = document.getElementById(`dropdown-${this.semesterID}`);
-        inpCopy.value = '';
+        this.selectedCourse = null;
         this.$emit('toggle-left-button');
         this.$emit('allow-add', true);
       }
-    },
-    getSelectedReqs() {
-      return this.selectedReqs;
-    },
-    addCourse() {
-      if (this.$refs[`dropdown-${this.semesterID}`].value) this.$emit('addItem', this.semesterID);
-    },
-    onboardingStyle(placeholderText, isOnboard) {
-      if (!isOnboard) {
-        return 'newCourse-dropdown';
-      }
-      return placeholderText !== 'Select one'
-        ? 'newCourse-onboarding'
-        : 'newCourse-onboarding newCourse-onboardingEmpty';
     },
   },
 });
@@ -436,25 +270,6 @@ export default Vue.extend({
     border-radius: 3px;
     padding: 0.5rem;
     border: 0.5px solid $inactiveGray;
-    &::placeholder {
-      color: $darkPlaceholderGray;
-    }
-  }
-  &-onboarding {
-    font-size: 14px;
-    line-height: 17px;
-    color: $black;
-    width: 100%;
-    border-radius: 3px;
-    padding: 0.5rem;
-    border: 0.5px solid $darkPlaceholderGray;
-    border-radius: 0px;
-    background-color: $white;
-    &::placeholder {
-      color: $black;
-    }
-  }
-  &-onboardingEmpty {
     &::placeholder {
       color: $darkPlaceholderGray;
     }
@@ -522,38 +337,5 @@ export default Vue.extend({
   width: 100%;
   margin-top: 0.5rem;
   padding-bottom: 12px;
-}
-input {
-  border: 1px solid transparent;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 16px;
-}
-.autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
-  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 7px;
-}
-.autocomplete-items div {
-  padding: 10px;
-  cursor: pointer;
-  background-color: $white;
-}
-.autocomplete-items div:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
-}
-.autocomplete-active {
-  /*when navigating through the items using the arrow keys:*/
-  background-color: DodgerBlue !important;
-  color: $white;
 }
 </style>

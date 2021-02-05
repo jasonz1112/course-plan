@@ -1,7 +1,7 @@
 <template>
   <div class="incompletesubreqcourse">
     <div class="draggable-requirements-wrapper" v-if="displayDescription">
-      <div id="incompleteSeparator" class="separator"></div>
+      <div class="separator"></div>
       <div class="draggable-requirements-heading">
         <div class="draggable-requirements-heading-label">{{ addCourseLabel }}</div>
         <div
@@ -38,7 +38,6 @@
           <course
             v-bind="course"
             :courseObj="course"
-            :id="course.subject + course.number"
             :uniqueID="course.uniqueID"
             :compact="true"
             :active="false"
@@ -55,17 +54,15 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import firebase from 'firebase/app';
 import VueSkeletonLoader from 'skeleton-loader-vue';
 import Course from '@/components/Course.vue';
 import AddCourseButton from '@/components/AddCourseButton.vue';
 import {
   DisplayableRequirementFulfillment,
-  CourseTaken,
   SubReqCourseSlot,
   CrseInfo,
 } from '@/requirements/types';
-import { AppCourse, FirestoreSemesterCourse } from '@/user-data';
+import { AppCourse } from '@/user-data';
 
 Vue.component('vue-skeleton-loader', VueSkeletonLoader);
 Vue.component('course', Course);
@@ -80,7 +77,6 @@ type Data = {
 export default Vue.extend({
   mounted() {
     this.$el.addEventListener('touchmove', this.dragListener, { passive: false });
-    // @ts-ignore
     const service = Vue.$dragula.$service;
     service.eventBus.$on('drag', () => {
       this.scrollable = true;
@@ -169,7 +165,7 @@ export default Vue.extend({
       }
       this.courseObjects = firstFourCourseObjects;
     },
-    onShowAllCourses(courses: AppCourse[]) {
+    onShowAllCourses() {
       this.$emit('onShowAllCourses', {
         requirementName: this.subReq.requirement.name,
         subReqCoursesArray: this.subReqCoursesArray,
@@ -205,10 +201,10 @@ export default Vue.extend({
     &-label {
       font-size: 14px;
       line-height: 17px;
-      color: $lightLabelGray;
+      color: $lightPlaceholderGray;
     }
     &-seeAll {
-      font-size: 12px;
+      font-size: 14px;
       line-height: 15px;
       color: $yuxuanBlue;
       padding: 0.2rem;

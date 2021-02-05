@@ -1,5 +1,5 @@
 <template>
-  <div id="dashboard" class="dashboard">
+  <div class="dashboard">
     <onboarding
       class="dashboard-onboarding"
       v-if="isOnboarding"
@@ -39,13 +39,11 @@
         :isBottomBarExpanded="bottomBar.isExpanded"
         :isBottomBar="bottomCourses.length > 0"
         :isMobile="isMobile"
-        :currSemID="currSemID"
         :reqs="reqs"
         @compact-updated="compactVal = $event"
         @edit-semesters="editSemesters"
         @updateBar="updateBar"
         @close-bar="closeBar"
-        @increment-semID="incrementSemID"
       />
     </div>
     <tourwindow
@@ -70,7 +68,7 @@
       v-if="showTourEndWindow"
     >
     </tourwindow>
-    <div id="dashboard-bottomView">
+    <div>
       <bottombar
         v-if="bottomCourses.length > 0 && ((!isOpeningRequirements && isTablet) || !isTablet)"
         :bottomCourses="bottomCourses"
@@ -101,17 +99,19 @@ import TourWindow from '@/components/Modals/TourWindow.vue';
 import surfing from '@/assets/images/surfing.svg';
 
 import '@/vueDragulaConfig';
-import { auth, userDataCollection } from '@/firebaseConfig';
+import {
+  auth,
+  db,
+  usernameCollection,
+  semestersCollection,
+  toggleableRequirementChoicesCollection,
+  subjectColorsCollection,
+  uniqueIncrementerCollection,
+  onboardingDataCollection,
+} from '@/firebaseConfig';
 import {
   FirestoreUserName,
-  FirestoreSemesterCourse,
-  FirestoreSemesterType,
-  FirestoreSemester,
-  FirestoreMajorOrMinor,
-  FirestoreAPIBExam,
-  FirestoreTransferClass,
-  FirestoreNestedUserData,
-  FirestoreUserData,
+  FirestoreOnboardingUserData,
   CornellCourseRosterCourse,
   AppUser,
   AppCourse,
@@ -122,9 +122,10 @@ import {
   createAppUser,
   AppToggleableRequirementChoices,
 } from '@/user-data';
-import { RequirementMap, computeRequirements } from '@/requirements/reqs-functions';
+import { computeRequirements } from '@/requirements/reqs-functions';
 import { CourseTaken, SingleMenuRequirement } from '@/requirements/types';
 import getCourseEquivalentsFromUserExams from '@/requirements/data/exams/ExamCredit';
+import getCurrentSeason, { checkNotNull, getCurrentYear, getSubjectColor } from '@/utilities';
 
 Vue.component('course', Course);
 Vue.component('semesterview', SemesterView);
@@ -143,15 +144,11 @@ tour.setOption('exitOnOverlayClick', 'false');
 
 export default Vue.extend({
   data() {
-    const user = auth.currentUser;
-    const names = user!.displayName!.split(' ');
+    const names = checkNotNull(checkNotNull(auth.currentUser).displayName).split(' ');
     return {
       loaded: false,
       compactVal: false,
-      currSemID: 1,
-      semesters: [] as AppSemester[],
-      firebaseSems: [] as FirestoreSemester[],
-      currentClasses: [] as AppCourse[],
+      semesters: [] as readonly AppSemester[],
       toggleableRequirementChoices: {} as AppToggleableRequirementChoices,
       user: {
         major: [],
@@ -206,55 +203,59 @@ export default Vue.extend({
     window.removeEventListener('resize', this.resizeEventHandler);
   },
   methods: {
-    getDocRef() {
-      const user = auth.currentUser;
-      const userEmail = user!.email as string;
-      const docRef = userDataCollection.doc(userEmail);
-      return docRef;
+    getUserEmail(): string {
+      return checkNotNull(checkNotNull(auth.currentUser).email);
     },
 
     getInformationFromUser() {
-      const docRef = this.getDocRef();
+      Promise.all([
+        usernameCollection.doc(this.getUserEmail()).get(),
+        semestersCollection.doc(this.getUserEmail()).get(),
+        toggleableRequirementChoicesCollection.doc(this.getUserEmail()).get(),
+        subjectColorsCollection.doc(this.getUserEmail()).get(),
+        uniqueIncrementerCollection.doc(this.getUserEmail()).get(),
+        onboardingDataCollection.doc(this.getUserEmail()).get(),
+      ]).then(
+        ([
+          usernameDoc,
+          semesterDoc,
+          toggleableRequirementChoicesDoc,
+          subjectColorsDoc,
+          uniqueIncrementerDoc,
+          onboardingDataDoc,
+        ]) => {
+          const usernameData = usernameDoc.data();
+          const semestersData = semesterDoc.data();
+          const uniqueIncrementerData = uniqueIncrementerDoc.data();
+          const onboardingData = onboardingDataDoc.data();
+          if (usernameData != null && onboardingData != null) {
+            this.user = createAppUser(onboardingData, usernameData);
+          }
+          if (semestersData != null) {
+            this.semesters = firestoreSemestersToAppSemesters(semestersData.semesters);
+          } else {
+            const newSemesterData = [
+              { type: getCurrentSeason(), year: getCurrentYear(), courses: [] },
+            ];
+            this.semesters = newSemesterData;
+            semestersCollection.doc(this.getUserEmail()).set({ semesters: newSemesterData });
+          }
+          this.toggleableRequirementChoices = toggleableRequirementChoicesDoc.data() || {};
+          this.subjectColors = subjectColorsDoc.data() || {};
+          this.uniqueIncrementer =
+            uniqueIncrementerData != null ? uniqueIncrementerData.uniqueIncrementer : 0;
 
-      // TODO: error handling for firebase errors
-      docRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            const firestoreUserData = doc.data() as FirestoreUserData;
-            this.semesters = firestoreSemestersToAppSemesters(firestoreUserData.semesters);
-            this.currSemID += this.semesters.length;
-            this.toggleableRequirementChoices =
-              firestoreUserData.toggleableRequirementChoices || {};
-
-            this.firebaseSems = firestoreUserData.semesters as FirestoreSemester[];
-            this.user = this.parseUserData(firestoreUserData.userData, firestoreUserData.name);
-            this.subjectColors = firestoreUserData.subjectColors;
-            this.uniqueIncrementer = firestoreUserData.uniqueIncrementer;
+          if (usernameData != null && semestersData != null && onboardingData != null) {
             this.loaded = true;
             this.recomputeRequirements();
           } else {
-            this.semesters.push({
-              id: this.currSemID,
-              type: this.getCurrentSeason(),
-              year: this.getCurrentYear(),
-              courses: [],
-            });
-            this.firebaseSems.push({
-              type: this.getCurrentSeason(),
-              year: this.getCurrentYear(),
-              courses: [],
-            });
-            this.currSemID += 1;
             this.startOnboarding();
           }
-        })
-        .catch(error => {
-          console.log('Error getting document:', error);
-        });
+        }
+      );
     },
 
-    editSemesters(newSemesters: AppSemester[]) {
+    editSemesters(newSemesters: readonly AppSemester[]) {
       this.semesters = newSemesters;
       this.recomputeRequirements();
     },
@@ -262,10 +263,12 @@ export default Vue.extend({
       toggleableRequirementChoices: AppToggleableRequirementChoices
     ) {
       this.toggleableRequirementChoices = toggleableRequirementChoices;
-      this.getDocRef().update({ toggleableRequirementChoices });
+      toggleableRequirementChoicesCollection
+        .doc(this.getUserEmail())
+        .set(toggleableRequirementChoices);
       this.recomputeRequirements();
     },
-    resizeEventHandler(e: any) {
+    resizeEventHandler() {
       this.isMobile = window.innerWidth <= 440;
       this.isTablet = window.innerWidth <= 878;
       this.maxBottomBarTabs = window.innerWidth <= 1347 ? 2 : 4;
@@ -279,23 +282,6 @@ export default Vue.extend({
       this.isOpeningRequirements = !this.isOpeningRequirements;
     },
 
-    getCurrentSeason() {
-      let currentSeason: FirestoreSemesterType;
-      const currentMonth = new Date().getMonth();
-      if (currentMonth === 0) {
-        currentSeason = 'Winter';
-      } else if (currentMonth <= 4) {
-        currentSeason = 'Spring';
-      } else if (currentMonth <= 7) {
-        currentSeason = 'Summer';
-      } else {
-        currentSeason = 'Fall';
-      }
-      return currentSeason;
-    },
-    getCurrentYear(): number {
-      return new Date().getFullYear();
-    },
     /**
      * Creates a course on frontend with either user or API data
      */
@@ -321,7 +307,6 @@ export default Vue.extend({
     },
 
     incrementID() {
-      const docRef = this.getDocRef();
       // If uniqueIncrementer attribute does not exist, initialize it to 0 and populate existing courses
       if (this.uniqueIncrementer === undefined) {
         this.uniqueIncrementer = 0;
@@ -334,76 +319,17 @@ export default Vue.extend({
       } else {
         this.uniqueIncrementer += 1;
       }
-      docRef.update({ uniqueIncrementer: this.uniqueIncrementer });
+      uniqueIncrementerCollection
+        .doc(this.getUserEmail())
+        .set({ uniqueIncrementer: this.uniqueIncrementer });
       return this.uniqueIncrementer;
     },
 
     addColor(subject: string) {
-      if (this.subjectColors[subject]) return this.subjectColors[subject];
-
-      const colors = [
-        {
-          text: 'Red',
-          hex: 'DA4A4A',
-        },
-        {
-          text: 'Orange',
-          hex: 'FFA53C',
-        },
-        {
-          text: 'Yellow',
-          hex: 'FFE142',
-        },
-        {
-          text: 'Green',
-          hex: '58C913',
-        },
-        {
-          text: 'Blue',
-          hex: '139DC9',
-        },
-        {
-          text: 'Purple',
-          hex: 'C478FF',
-        },
-        {
-          text: 'Pink',
-          hex: 'F296D3',
-        },
-      ];
-
-      // Create list of used colors
-      const colorsUsedMap: Record<string, boolean> = {};
-      for (const subjectKey of Object.keys(this.subjectColors)) {
-        const subjectColor = this.subjectColors[subjectKey];
-        colorsUsedMap[subjectColor] = true;
-      }
-
-      // Filter out used colors
-      const unusedColors = colors.filter(color => !colorsUsedMap[color.hex]);
-
-      let randomColor;
-
-      // pick a color from unusedColors if there are any
-      if (unusedColors.length !== 0) {
-        randomColor = unusedColors[Math.floor(Math.random() * unusedColors.length)].hex;
-        // otherwise pick a color following the random order set by the first 7 subjects
-      } else {
-        const colorIndex = Object.keys(this.subjectColors).length;
-        const key = Object.keys(this.subjectColors)[colorIndex % colors.length];
-        randomColor = this.subjectColors[key];
-      }
-
+      const color = getSubjectColor(this.subjectColors, subject);
       // Update subjectColors on Firebase with new subject color group
-      const docRef = this.getDocRef();
-      this.subjectColors[subject] = randomColor;
-      docRef.update({ subjectColors: this.subjectColors });
-
-      // Return randomly generated color
-      return randomColor;
-    },
-    incrementSemID() {
-      this.currSemID += 1;
+      subjectColorsCollection.doc(this.getUserEmail()).set(this.subjectColors);
+      return color;
     },
     showTourEnd() {
       if (!this.isMobile) {
@@ -491,7 +417,15 @@ export default Vue.extend({
       });
     },
 
-    getReviews(subject: string, number: string, callback: (review: any) => void) {
+    getReviews(
+      subject: string,
+      number: string,
+      callback: (review: {
+        classRating: number;
+        classDifficulty: number;
+        classWorkload: number;
+      }) => void
+    ) {
       fetch(`https://www.cureviews.org/classInfo/${subject}/${number}/CY0LG2ukc2EOBRcoRbQy`).then(
         res => {
           res.json().then(reviews => {
@@ -540,64 +474,32 @@ export default Vue.extend({
       this.isOnboarding = true;
     },
 
-    endOnboarding(onboardingData: { userData: FirestoreNestedUserData; name: FirestoreUserName }) {
-      const user = this.parseUserData(onboardingData.userData, onboardingData.name);
+    endOnboarding(onboardingData: {
+      userData: FirestoreOnboardingUserData;
+      name: FirestoreUserName;
+    }) {
+      const user = createAppUser(onboardingData.userData, onboardingData.name);
 
       this.user = user;
       this.loaded = true;
+      if (!this.isMobile) {
+        this.welcomeHidden = true;
+      }
 
-      const docRef = this.getDocRef();
-      const data = {
-        name: onboardingData.name,
-        userData: onboardingData.userData,
-        toggleableRequirementChoices: this.toggleableRequirementChoices,
-        semesters: this.firebaseSems,
-        subjectColors: this.subjectColors,
-        uniqueIncrementer: this.uniqueIncrementer,
-      };
-      docRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            this.welcomeHidden = false;
-          } else if (!this.isMobile) {
-            this.welcomeHidden = true;
-          }
-          docRef.set(data);
-          this.cancelOnboarding();
-          this.recomputeRequirements();
-        })
+      db.batch()
+        .set(usernameCollection.doc(this.getUserEmail()), onboardingData.name)
+        .set(onboardingDataCollection.doc(this.getUserEmail()), onboardingData.userData)
+        .commit()
         .catch(error => {
-          console.log('Error getting document:', error);
+          console.log('Failed to write onboarding data:', error);
         });
-      // set the new name and userData, along with either an empty list of semesters or preserve the old list
+
+      this.cancelOnboarding();
+      this.recomputeRequirements();
     },
 
     cancelOnboarding() {
       this.isOnboarding = false;
-    },
-    parseUserData(data: FirestoreNestedUserData, name: FirestoreUserName): AppUser {
-      const user = createAppUser(data, name);
-
-      const transferClasses: any[] = [];
-      user.exam.forEach(exam => {
-        if ('equivCourse' in exam) {
-          transferClasses.push(exam.equivCourse[0]);
-        }
-      });
-      user.transferCourse.forEach(course => {
-        const courseInfo = cornellCourseRosterCourseToAppCourse(
-          course.course,
-          false,
-          () => this.incrementID(),
-          subject => this.addColor(subject)
-        );
-        transferClasses.push(courseInfo);
-        // ; // TODO for user to pick which req a class goes for
-      });
-      this.currentClasses = transferClasses;
-
-      return user;
     },
 
     editProfile() {
@@ -708,9 +610,9 @@ export default Vue.extend({
     },
     deleteCourseFromSemesters(uniqueID: number) {
       const updatedSemesters = this.semesters.map(semester => {
-        const coursesWithoutDeleted = semester.courses.filter(course => {
-          return course.uniqueID !== uniqueID;
-        });
+        const coursesWithoutDeleted = semester.courses.filter(
+          course => course.uniqueID !== uniqueID
+        );
         return { ...semester, courses: coursesWithoutDeleted };
       });
       this.editSemesters(updatedSemesters);
@@ -720,12 +622,15 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
+@import '@/assets/scss/_variables.scss';
+
 .dashboard {
   display: flex;
   flex-direction: column;
 
   &-mainView {
     display: flex;
+    background-color: $backgroundBlue;
   }
 
   &-menus {

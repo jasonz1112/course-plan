@@ -7,7 +7,6 @@
         >
         <div
           v-bind:class="[{ duplicate: isDuplicate() }, { 'newSemester-select': !isDuplicate() }]"
-          id="season"
           class="position-relative"
           v-click-outside="closeSeasonDropdownIfOpen"
         >
@@ -16,37 +15,24 @@
             @click="showHideSeasonContent"
           >
             <div
-              v-if="isEdit"
               class="newSemester-dropdown-placeholder season-placeholder"
-              :id="'season-placeholder-' + id"
-              :style="{ color: displayOptions.season.placeholderColor }"
-            >
-              {{ seasonPlaceholder }}
-            </div>
-            <div
-              v-else
-              class="newSemester-dropdown-placeholder season-placeholder"
-              id="season-placeholder"
               :style="{ color: displayOptions.season.placeholderColor }"
             >
               {{ seasonPlaceholder }}
             </div>
             <div
               class="newSemester-dropdown-placeholder season-arrow"
-              id="season-arrow"
               :style="{ borderTopColor: displayOptions.season.arrowColor }"
             ></div>
           </div>
           <div
             class="newSemester-dropdown-content season-content position-absolute w-100"
-            id="season-content"
             v-if="displayOptions.season.shown"
           >
             <div
               v-bind:class="{ warning: isDuplicate }"
               v-for="season in seasons"
               :key="seasonValue(season)"
-              :id="season"
               class="newSemester-dropdown-content-item"
               @click="selectSeason(season[1])"
             >
@@ -62,42 +48,28 @@
         >
         <div
           v-bind:class="[{ duplicate: isDuplicate() }, { 'newSemester-select': !isDuplicate() }]"
-          id="year"
           class="position-relative"
           v-click-outside="closeYearDropdownIfOpen"
         >
           <div class="newSemester-dropdown-placeholder year-wrapper" @click="showHideYearContent">
             <div
-              v-if="isEdit"
               class="newSemester-dropdown-placeholder year-placeholder"
-              :id="'year-placeholder-' + id"
-              :style="{ color: displayOptions.year.placeholderColor }"
-            >
-              {{ yearPlaceholder }}
-            </div>
-            <div
-              v-else
-              class="newSemester-dropdown-placeholder year-placeholder"
-              id="year-placeholder"
               :style="{ color: displayOptions.year.placeholderColor }"
             >
               {{ yearPlaceholder }}
             </div>
             <div
               class="newSemester-dropdown-placeholder year-arrow"
-              id="year-arrow"
               :style="{ borderTopColor: displayOptions.year.arrowColor }"
             ></div>
           </div>
           <div
             class="newSemester-dropdown-content year-content position-absolute"
-            id="year-content"
             v-if="displayOptions.year.shown"
           >
             <div
               v-for="year in years"
               :key="year"
-              :id="year"
               class="newSemester-dropdown-content-item"
               @click="selectYear(year)"
             >
@@ -119,16 +91,7 @@ import fall from '@/assets/images/fallEmoji.svg';
 import spring from '@/assets/images/springEmoji.svg';
 import winter from '@/assets/images/winterEmoji.svg';
 import summer from '@/assets/images/summerEmoji.svg';
-import {
-  // @ts-ignore
-  inactiveGray,
-  // @ts-ignore
-  yuxuanBlue,
-  // @ts-ignore
-  lightPlaceholderGray,
-  // @ts-ignore
-  darkPlaceholderGray,
-} from '@/assets/scss/_variables.scss';
+import { inactiveGray, yuxuanBlue, darkPlaceholderGray } from '@/assets/scss/_variables.scss';
 import { FirestoreSemesterType, AppSemester } from '@/user-data';
 
 // enum to define seasons as integers in season order
@@ -225,7 +188,7 @@ export default Vue.extend({
   },
   methods: {
     seasonValue(season: readonly [string, string]): number {
-      // @ts-ignore
+      // @ts-expect-error: TS cannot understand lowercasing the string produces the right field name.
       return SeasonsEnum[season[1].toLowerCase()];
     },
     getCurrentSeason(): FirestoreSemesterType {
@@ -325,7 +288,11 @@ export default Vue.extend({
       if (semesters != null) {
         semesters.forEach(semester => {
           if (semester.year === this.yearPlaceholder && semester.type === this.seasonPlaceholder) {
-            if (!this.isEdit || (this.isEdit && this.id !== semester.id)) {
+            if (
+              !this.isEdit ||
+              (this.isEdit &&
+                (this.yearPlaceholder !== this.year || this.seasonPlaceholder !== this.type))
+            ) {
               isDup = true;
             }
           }
@@ -407,10 +374,10 @@ export default Vue.extend({
       font-size: 14px;
       line-height: 15px;
 
-      color: #b6b6b6;
+      color: #757575;
 
       background-color: white;
-      color: #b6b6b6;
+      color: #757575;
 
       &.season-wrapper,
       &.year-wrapper {

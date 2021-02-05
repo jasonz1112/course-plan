@@ -1,7 +1,6 @@
 <template v-if="semesters">
   <div class="requirements">
     <div
-      id="req-tooltip"
       class="fixed"
       data-intro-group="req-tooltip"
       :v-bind:class="{ 'd-none': !shouldShowAllCourses }"
@@ -10,7 +9,6 @@
       data-step="1"
       data-tooltipClass="tooltipCenter"
     >
-      <h1 class="title">School Requirements</h1>
       <!-- loop through reqs array of req objects -->
       <div class="req" v-for="(req, index) in reqs" :key="index">
         <requirementview
@@ -51,7 +49,6 @@
               <course
                 v-bind="courseData"
                 :courseObj="courseData"
-                :id="courseData.subject + courseData.number"
                 :uniqueID="courseData.uniqueID"
                 :compact="false"
                 :active="false"
@@ -68,29 +65,14 @@
 <script lang="ts">
 import firebase from 'firebase/app';
 import 'firebase/functions';
-import { Vue } from 'vue-property-decorator';
-import { PropType } from 'vue';
-// @ts-ignore
+import Vue, { PropType } from 'vue';
 import VueCollapse from 'vue2-collapse';
 import introJs from 'intro.js';
 
 import Course from '@/components/Course.vue';
-import Modal from '@/components/Modals/Modal.vue';
 import RequirementView from '@/components/Requirements/RequirementView.vue';
-import SubRequirement from '@/components/Requirements/SubRequirement.vue';
 import DropDownArrow from '@/components/DropDownArrow.vue';
-import {
-  BaseRequirement as Requirement,
-  CourseTaken,
-  SingleMenuRequirement,
-  SubReqCourseSlot,
-  CrseInfo,
-} from '@/requirements/types';
-import {
-  RequirementMap,
-  computeRequirements,
-  computeRequirementMap,
-} from '@/requirements/reqs-functions';
+import { SingleMenuRequirement, SubReqCourseSlot, CrseInfo } from '@/requirements/types';
 import {
   AppUser,
   AppMajor,
@@ -101,12 +83,12 @@ import {
   AppToggleableRequirementChoices,
 } from '@/user-data';
 import { getRostersFromLastTwoYears } from '@/utilities';
+// emoji for clipboard
+import clipboard from '@/assets/images/clipboard.svg';
 
-const functions = firebase.functions();
 const FetchCourses = firebase.functions().httpsCallable('FetchCourses');
 
 Vue.component('course', Course);
-Vue.component('modal', Modal);
 Vue.component('requirementview', RequirementView);
 Vue.component('dropdownarrow', DropDownArrow);
 Vue.use(VueCollapse);
@@ -125,8 +107,6 @@ type Data = {
   showAllSubReqCourses: SubReqCourseSlot[];
   lastLoadedShowAllCourseId: number;
 };
-// emoji for clipboard
-const clipboard = require('@/assets/images/clipboard.svg');
 
 // This section will be revisited when we try to make first-time tooltips
 const tour = introJs().start();
@@ -222,7 +202,7 @@ export default Vue.extend({
         // Used to identify index of lastLoadedSeeAll
         const subReqCourses = subReqCoursesArray;
         let coursesCount = 0;
-        subReqCourses.forEach((subReqCourseSlot, i) => {
+        subReqCourses.forEach(subReqCourseSlot => {
           if (!subReqCourseSlot.isCompleted) {
             const crseInfoFromSemester: CrseInfo[] = [];
             subReqCourseSlot.courses.forEach((crseInfo: CrseInfo) => {
@@ -261,9 +241,7 @@ export default Vue.extend({
             });
             return resolve(fetchedCourses);
           })
-          .catch(error => {
-            return reject(error);
-          });
+          .catch(error => reject(error));
       });
     },
     onShowAllCourses(showAllCourses: {
@@ -282,9 +260,9 @@ export default Vue.extend({
           console.log('Fetch Error: ', err);
         });
     },
-    onScrollSeeAll(event: any) {
+    onScrollSeeAll(event: Event) {
       const { target } = event;
-      const { scrollTop, clientHeight, scrollHeight } = target;
+      const { scrollTop, clientHeight, scrollHeight } = target as HTMLDivElement;
       if (scrollTop + clientHeight >= scrollHeight) {
         this.getAllCrseInfoFromSemester(this.showAllSubReqCourses)
           .then(fetchedCourses => {

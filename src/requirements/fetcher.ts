@@ -8,7 +8,7 @@ import { Course } from './types';
 
 const PREFIX = 'https://classes.cornell.edu/api/2.0';
 
-const wait = (time: number) => new Promise(resolve => setTimeout(() => resolve(), time));
+const wait = (time: number) => new Promise<void>(resolve => setTimeout(() => resolve(), time));
 
 const getSemesters = async (): Promise<readonly string[]> => {
   const response = await fetch(`${PREFIX}/config/rosters.json`);
@@ -31,6 +31,8 @@ type CourseFieldFilter<T extends keyof Course> = (course: Course) => Pick<Course
 const getCourseFieldFilter = <T extends keyof Course>(allowedFields: T[]): CourseFieldFilter<T> => (
   course: Course
 ) => {
+  // Too dynamic
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filteredCourseObject: any = {};
   Object.entries(course).forEach(([field, value]) => {
     if (allowedFields.includes(field as T)) {
@@ -59,8 +61,8 @@ const getCoursesInSemesterAndSubject = async <T extends keyof Course>(
 const getAllCoursesInSemester = async <T extends keyof Course>(
   semester: string,
   courseFieldFilter: CourseFieldFilter<T>,
-  coolingTimeMs: number = 50,
-  doPrintDebuggingInfo: boolean = false
+  coolingTimeMs = 50,
+  doPrintDebuggingInfo = false
 ): Promise<readonly Pick<Course, T>[]> => {
   const courses: Pick<Course, T>[] = [];
   const subjects = await getSubjects(semester);
@@ -87,41 +89,10 @@ const getAllCoursesInSemester = async <T extends keyof Course>(
 
 type AllCourses<T extends keyof Course> = { [semester: string]: readonly Pick<Course, T>[] };
 
-const getAllCourses = async <T extends keyof Course>(
-  courseFieldFilter: CourseFieldFilter<T>,
-  coolingTimeMs: number = 50,
-  doPrintDebuggingInfo: boolean = true
-): Promise<AllCourses<T>> => {
-  const startTime = new Date().getTime();
-  const courses: AllCourses<T> = {};
-  const semesters = await getSemesters();
-  if (doPrintDebuggingInfo) {
-    console.log(`We have ${semesters.length} semesters in total.`);
-  }
-  let semesterCount = 0;
-  for (const semester of semesters) {
-    const semesterCourses = await getAllCoursesInSemester(
-      semester,
-      courseFieldFilter,
-      coolingTimeMs,
-      doPrintDebuggingInfo
-    );
-    courses[semester] = semesterCourses;
-    semesterCount += 1;
-    if (doPrintDebuggingInfo) {
-      console.log(`We fetched ${semesterCount} out of ${semesters.length} semesters.`);
-    }
-  }
-  if (doPrintDebuggingInfo) {
-    console.log(`Total Running Time: ${new Date().getTime() - startTime}ms.`);
-  }
-  return courses;
-};
-
 const generateSemesterJSONs = async <T extends keyof Course>(
   courseFieldFilter: CourseFieldFilter<T>,
-  coolingTimeMs: number = 50,
-  doPrintDebuggingInfo: boolean = true
+  coolingTimeMs = 50,
+  doPrintDebuggingInfo = true
 ): Promise<void> => {
   const startTime = new Date().getTime();
   const semesters = await getSemesters();
@@ -168,6 +139,6 @@ const courseFieldFilter = getCourseFieldFilter([
   'acadGroup',
 ]);
 
-generateSemesterJSONs(courseFieldFilter).then(x => {
+generateSemesterJSONs(courseFieldFilter).then(() => {
   console.log('All semester JSONs generated.');
 });
